@@ -1,0 +1,17 @@
+ext {
+    // Build configuration
+    buildToolsVersion = '27.0.2'
+    minSdkVersion = 15
+    compileSdkVersion = 27
+    targetSdkVersion = 27
+
+    // Gradle plugin
+    androidPluginVersion = '3.5.1'
+
+    // Library
+    glideVersion = '4.1.1'
+    gsonVersion = '2.7'
+    okHttpVersion = '3.8.1'
+    retrofitVersion = '2.3.0'
+    supportLibVersion = '27.0.2'
+}

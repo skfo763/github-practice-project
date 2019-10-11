@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        // manifest.xml 파일의 각 항목 재정의
+        applicationId "com.androidhuman.example.simplegithub"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        // manifest.xml 파일에서 정의할 수 있는 Github 앱 아이디 및 비밀번호를 gradle을 통해서 정의함.
+        // 하드코딩을 방지하기 위해 gradle.properties 파일에 아이디 및 비밀번호 정의해놓고 참조.
+        buildConfigField "String", "GITHUB_CLIENT_ID",
+                project.properties["GITHUB_CLIENT_ID"] ?: "\"NOT_FOUND\""
+
+        buildConfigField "String", "GITHUB_CLIENT_SECRET",
+                project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
+    }
+
+    buildTypes {
+        release {
+            // 릴리즈 타입 빌드 시 proguard 비참조, 디컴파일 방지 기능 해제
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+// 사용한 의존성들 : dependencies.gradle 에 있는 상세 버전 정보를 참조하여 라이브러리 의존성 주입
+dependencies {
+    //noinspection GradleDependency
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    //noinspection GradleDependency
+    implementation "com.android.support:customtabs:$supportLibVersion"
+    //noinspection GradleDependency
+    implementation "com.android.support:design:$supportLibVersion"
+    //noinspection GradleDependency
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+}

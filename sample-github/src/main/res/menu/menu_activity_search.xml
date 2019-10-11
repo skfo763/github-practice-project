@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 앱 우측 상단, 혹은 상단에 위치한 메뉴의 속성 및 아이템 지정 -->
+<!-- 액션 바의 메뉴 아이템 속성 지정이므로, showAsAction 태그로 클릭 시 액션 속성 지정
+     이 경우 우리는 클릭 시 검색 기능을 제공할 것이므로, SearchView 로 구현 -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_activity_search_query"
+        android:icon="@drawable/ic_search_white"
+        android:title="@string/search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
+        android:id="@+id/menu_activity_dummy"
+        android:icon="@drawable/ic_language_black"
+        android:title="@string/dummy"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.widget.Button" />
+</menu>
