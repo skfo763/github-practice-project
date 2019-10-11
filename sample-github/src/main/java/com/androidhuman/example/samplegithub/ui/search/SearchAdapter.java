@@ -2,15 +2,16 @@ package com.androidhuman.example.samplegithub.ui.search;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.androidhuman.example.samplegithub.R;
 import com.androidhuman.example.samplegithub.api.model.GithubRepo;
@@ -28,8 +29,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Repository
     @Nullable
     private ItemClickListener listener;
 
+    @NonNull
     @Override
-    public RepositoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RepositoryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RepositoryHolder(parent);
     }
 

@@ -3,13 +3,6 @@ package com.androidhuman.example.samplegithub.ui.search;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +10,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.androidhuman.example.samplegithub.R;
 import com.androidhuman.example.samplegithub.api.GithubApi;
@@ -84,6 +85,7 @@ public class SearchActivity extends AppCompatActivity implements SearchAdapter.I
         // menuSearch 액션 속성으로 지정해준 SearchView 의 동작 설정.
         searchView = (SearchView) menuSearch.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // SearchView 의 EditText 로 검색할 String 항목이 넘어왔을 때 동작 설정.

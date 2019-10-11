@@ -2,8 +2,8 @@ package com.androidhuman.example.samplegithub.data;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public final class AuthTokenProvider {
     // SharedPreference 객체를 활용해, web 상에서 얻을 수 있는 token 값을

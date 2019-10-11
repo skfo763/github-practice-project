@@ -11,13 +11,18 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // manifest.xml 파일에서 정의할 수 있는 Github 앱 아이디 및 비밀번호를 gradle을 통해서 정의함.
+        // manifest.xml 파일에서 정의할 수 있는 Github 앱 아이디 및 비밀번호를 gradle 을 통해서 정의함.
         // 하드코딩을 방지하기 위해 gradle.properties 파일에 아이디 및 비밀번호 정의해놓고 참조.
         buildConfigField "String", "GITHUB_CLIENT_ID",
                 project.properties["GITHUB_CLIENT_ID"] ?: "\"NOT_FOUND\""
 
         buildConfigField "String", "GITHUB_CLIENT_SECRET",
                 project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
+    }
+
+    // 코틀린 코드를 저장하기 위한 폴더를 소스 폴더에 추가(등록)
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     buildTypes {
@@ -32,13 +37,12 @@ android {
 // 사용한 의존성들 : dependencies.gradle 에 있는 상세 버전 정보를 참조하여 라이브러리 의존성 주입
 dependencies {
     //noinspection GradleDependency
-    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     //noinspection GradleDependency
-    implementation "com.android.support:customtabs:$supportLibVersion"
+    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
     //noinspection GradleDependency
-    implementation "com.android.support:design:$supportLibVersion"
-    //noinspection GradleDependency
-    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"

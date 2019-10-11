@@ -1,6 +1,6 @@
 package com.androidhuman.example.samplegithub.api;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.androidhuman.example.samplegithub.api.model.GithubAccessToken;
 

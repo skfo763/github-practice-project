@@ -1,8 +1,8 @@
 package com.androidhuman.example.samplegithub.api;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.androidhuman.example.samplegithub.data.AuthTokenProvider;
 
