@@ -17,7 +17,7 @@ buildscript {
 
         // 코틀린 gradle 플러그인을 추가
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" }
+    }
 }
 
 allprojects {

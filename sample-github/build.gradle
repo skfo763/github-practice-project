@@ -20,11 +20,6 @@ android {
                 project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
     }
 
-    // 코틀린 코드를 저장하기 위한 폴더를 소스 폴더에 추가(등록)
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
     buildTypes {
         release {
             // 릴리즈 타입 빌드 시 proguard 비참조, 디컴파일 방지 기능 해제
@@ -36,12 +31,9 @@ android {
 
 // 사용한 의존성들 : dependencies.gradle 에 있는 상세 버전 정보를 참조하여 라이브러리 의존성 주입
 dependencies {
-    //noinspection GradleDependency
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    //noinspection GradleDependency
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.browser:browser:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
-    //noinspection GradleDependency
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
