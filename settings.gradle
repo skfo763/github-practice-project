@@ -1,1 +1,1 @@
-include ':sample-github', ':sample-github-kotlin'
+include ':sample-github', ':sample-github-kotlin', ':sample-github-mvp'

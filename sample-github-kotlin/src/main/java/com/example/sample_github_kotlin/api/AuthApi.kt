@@ -20,5 +20,4 @@ interface AuthApi {
             @Field("client_secret") clientSecret: String,
             @Field("code") code: String
     ): Call<GithubAccessToken>
-
 }

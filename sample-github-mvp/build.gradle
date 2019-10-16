@@ -1,8 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
-// 코틀린 어노테이션 프로세싱을 사용할 수 있도록 플러그인 추가
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -10,13 +8,11 @@ android {
     buildToolsVersion "29.0.2"
 
     defaultConfig {
-        applicationId "com.example.sample_github_kotlin"
+        applicationId "com.example.sample_github_mvp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // manifest.xml 파일에서 정의할 수 있는 Github 앱 아이디 및 비밀번호를 gradle 을 통해서 정의함.
         // 하드코딩을 방지하기 위해 gradle.properties 파일에 아이디 및 비밀번호 정의해놓고 참조.
@@ -29,11 +25,11 @@ android {
 
     buildTypes {
         release {
+            // 릴리즈 타입 빌드 시 proguard 비참조, 디컴파일 방지 기능 해제
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {

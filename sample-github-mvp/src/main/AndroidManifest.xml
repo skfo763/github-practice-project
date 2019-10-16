@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.sample_github_mvp"
+    tools:ignore="UnusedAttribute">
+
+    <!-- 외부 서버와 통신 필요, 인터넷 기능 사용을 위한 권한 추가 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme">
+
+        <!-- MainActivity 정의 -->
+        <activity
+            android:name="com.example.sample_github_mvp.view.main.MainActivity"
+            android:label="@string/app_name" />
+
+        <!-- SigninActivity 정의 -->
+        <activity
+            android:name="com.example.sample_github_mvp.view.signin.SignInActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
+            <!-- 시작 화면으로 설정한다는 intent-filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Githup API를 활용해 사용자 인증 완료시, 콜백 주소로 전달되는 정보를 받기 위한 intent-filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- 콜백 시 받는 데이터 -->
+                <!-- host가 authorize, scheme가 sample_github_kotlin 이므로, sample_github_kotlin://authorize url 주소를 열 수 있음 -->
+                <data
+                    android:host="authorize"
+                    android:scheme="sample_github_kotlin" />
+            </intent-filter>
+        </activity>
+
+        <!-- SearchActivity 정의 -->
+        <activity
+            android:name="com.example.sample_github_mvp.view.search.SearchActivity"
+            android:label="@string/search"
+            android:parentActivityName="com.example.sample_github_mvp.view.main.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.sample_github_mvp.view.main.MainActivity" />
+        </activity>
+
+        <!-- RepositoryActivity 정의 -->
+        <activity
+            android:name="com.example.sample_github_mvp.view.repo.RepositoryActivity"
+            android:label="@string/view_repository"
+            android:parentActivityName="com.example.sample_github_mvp.view.main.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.sample_github_mvp.view.main.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>
