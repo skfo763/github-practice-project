@@ -2,16 +2,13 @@ package com.example.sample_github_kotlin.ui.repo
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sample_github_kotlin.R
 import com.example.sample_github_kotlin.api.GithubApi
 import com.example.sample_github_kotlin.api.GithubApiProvider
 import com.example.sample_github_kotlin.api.model.GithubRepo
 import com.example.sample_github_kotlin.ui.GlideApp
+import kotlinx.android.synthetic.main.activity_repository.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,41 +18,23 @@ import java.util.*
 
 class RepositoryActivity : AppCompatActivity() {
 
-    internal lateinit var llContent: LinearLayout
-    internal lateinit var ivProfile: ImageView
-    internal lateinit var tvName: TextView
-    internal lateinit var tvStars: TextView
-    internal lateinit var tvDescription: TextView
-    internal lateinit var tvLanguage: TextView
-    internal lateinit var tvLastUpdate: TextView
-    internal lateinit var pbProgress: ProgressBar
-    internal lateinit var tvMessage: TextView
+    // 같은 모듈 안에서 사용하도록 internal 제한자 사용
     internal lateinit var api: GithubApi
 
-    internal lateinit var repoCall: Call<GithubRepo>
+    // 클래스 내부에서만 사용하도록 private 제한자 사용
+    private lateinit var repoCall: Call<GithubRepo>
 
     // REST API 응답에 포함된 날짜 및 시간 표시 형식
-    internal var dateFormatInResponse = SimpleDateFormat(
+    private var dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
 
     // 사용자에게 보여줄 날짜 및 시간 표시 형식
-    internal var dateFormatToShow = SimpleDateFormat(
+    private var dateFormatToShow = SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repository)
-
-        llContent = findViewById(R.id.llActivityRepositoryContent)
-        ivProfile = findViewById(R.id.ivActivityRepositoryProfile)
-        tvName = findViewById(R.id.tvActivityRepositoryName)
-        tvStars = findViewById(R.id.tvActivityRepositoryStars)
-        tvDescription = findViewById(R.id.tvActivityRepositoryDescription)
-        tvLanguage = findViewById(R.id.tvActivityRepositoryLanguage)
-        tvLastUpdate = findViewById(R.id.tvActivityRepositoryLastUpdate)
-        pbProgress = findViewById(R.id.pbActivityRepository)
-        tvMessage = findViewById(R.id.tvActivityRepositoryMessage)
-
         api = GithubApiProvider.provideGithubApi(this)
 
         // 액티비티 호출 시 전달받은 user login 엑스트라 추출
@@ -78,32 +57,18 @@ class RepositoryActivity : AppCompatActivity() {
                 hideProgress(true)
 
                 val repo = response.body()
-                if (response.isSuccessful() && null != repo) {
-                    GlideApp.with(this@RepositoryActivity)
-                            .load(repo.owner.avatarUrl)
-                            .into(ivProfile)
 
-                    tvName.setText(repo.fullName)
-                    tvStars.text = resources
-                            .getQuantityString(R.plurals.star, repo.stars, repo!!.stars)
-                    if (null == repo!!.description) {
-                        tvDescription.setText(R.string.no_description_provided)
-                    } else {
-                        tvDescription.setText(repo!!.description)
-                    }
-                    if (null == repo!!.language) {
-                        tvLanguage.setText(R.string.no_language_specified)
-                    } else {
-                        tvLanguage.setText(repo!!.language)
-                    }
+                // 여기서 널 체크를 했으므로, if 블록 안의 repo 는 !!로 non-null 표시를 해줄 필요가 없음.
+                if (response.isSuccessful) {
+                    repo.let {
+                        GlideApp.with(this@RepositoryActivity)
+                                .load(it!!.owner.avatarUrl)
+                                .into(ivActivityRepositoryProfile)
 
-                    try {
-                        val lastUpdate = dateFormatInResponse.parse(repo!!.updatedAt)
-                        tvLastUpdate.text = dateFormatToShow.format(lastUpdate!!)
-                    } catch (e: ParseException) {
-                        tvLastUpdate.text = getString(R.string.unknown)
+                        tvActivityRepositoryName.text = repo!!.fullName
+                        tvActivityRepositoryStars.text = resources.getQuantityString(R.plurals.star, repo.stars, repo.stars)
+                        checkInformation(it)
                     }
-
                 } else {
                     showError("Not successful: " + response.message())
                 }
@@ -116,24 +81,47 @@ class RepositoryActivity : AppCompatActivity() {
         })
     }
 
+    // 받아온 정보가 비어있는지, 잘못 파싱되었는지 처리하는 로직을 함수로 구별하여 정리
+    private fun checkInformation(repo: GithubRepo) {
+        if (repo.description.isEmpty()) {
+            tvActivityRepositoryDescription.text = getText(R.string.no_description_provided)
+        } else {
+            tvActivityRepositoryDescription.text = repo.description
+        }
+
+        if (repo.language.isEmpty()) {
+            tvActivityRepositoryLanguage.text = getText(R.string.no_language_specified)
+        } else {
+            tvActivityRepositoryLanguage.text = repo.language
+        }
+
+        try {
+            val lastUpdate = dateFormatInResponse.parse(repo.updatedAt)
+            tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate!!)
+        } catch (e: ParseException) {
+            tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
+        }
+    }
+
     private fun showProgress() {
-        llContent.visibility = View.GONE
-        pbProgress.visibility = View.VISIBLE
+        llActivityRepositoryContent.visibility = View.GONE
+        pbActivityRepository.visibility = View.VISIBLE
     }
 
     private fun hideProgress(isSucceed: Boolean) {
-        llContent.visibility = if (isSucceed) View.VISIBLE else View.GONE
-        pbProgress.visibility = View.GONE
+        llActivityRepositoryContent.visibility = if (isSucceed) View.VISIBLE else View.GONE
+        pbActivityRepository.visibility = View.GONE
     }
 
     private fun showError(message: String?) {
-        tvMessage.text = message
-        tvMessage.visibility = View.VISIBLE
+        tvActivityRepositoryMessage.text = message
+        tvActivityRepositoryMessage.visibility = View.VISIBLE
     }
 
+    // 동반 객체로 설정하여 다른 클래스에서도 참조할 수 있도록 함.
     companion object {
-
-        val KEY_USER_LOGIN = "user_login"
-        val KEY_REPO_NAME = "repo_name"
+        // const 예약어를 통해 상수로 설정
+        const val KEY_USER_LOGIN = "user_login"
+        const val KEY_REPO_NAME = "repo_name"
     }
 }

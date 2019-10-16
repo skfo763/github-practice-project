@@ -9,20 +9,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.sample_github_kotlin.R
 import com.example.sample_github_kotlin.api.GithubApi
 import com.example.sample_github_kotlin.api.GithubApiProvider
 import com.example.sample_github_kotlin.api.model.GithubRepo
 import com.example.sample_github_kotlin.api.model.RepoSearchResponse
 import com.example.sample_github_kotlin.ui.repo.RepositoryActivity
+import kotlinx.android.synthetic.main.activity_search.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,33 +28,25 @@ import java.util.*
 
 // SearchAdapter 의 ItemClickListener 인터페이스 상속
 class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
-
-    internal lateinit var rvList: RecyclerView
-    internal lateinit var progress: ProgressBar
-    internal lateinit var tvMessage: TextView
-    internal lateinit var menuSearch: MenuItem
-    internal lateinit var menuDummy: MenuItem
-    internal lateinit var searchView: SearchView
-    internal lateinit var adapter: SearchAdapter
+    
     internal lateinit var api: GithubApi
-
-    internal lateinit var searchCall: Call<RepoSearchResponse>
+    private lateinit var searchCall: Call<RepoSearchResponse>
+    lateinit var adapter: SearchAdapter
+    private lateinit var menuSearch: MenuItem
+    private lateinit var menuDummy: MenuItem
+    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        rvList = findViewById(R.id.rvActivitySearchList)
-        progress = findViewById(R.id.pbActivitySearch)
-        tvMessage = findViewById(R.id.tvActivitySearchMessage)
-
         // 어댑터 객체 초기화 및 설정
         adapter = SearchAdapter()
-        adapter.setItemClickListener(this) // 이 클래스 내부에 선언된 onItemClick 함수를 넘겨주겠다.
+        adapter.listener = this // 이 클래스 내부에 선언된 onItemClick 함수를 넘겨주겠다.
 
         // RecyclerView 에 Adpater 넘겨줘서 데이터 띄워줌
-        rvList.layoutManager = LinearLayoutManager(this)
-        rvList.adapter = adapter
+        rvActivitySearchList.layoutManager = LinearLayoutManager(this)
+        rvActivitySearchList.adapter = adapter
 
         api = GithubApiProvider.provideGithubApi(this)
     }
@@ -100,23 +90,23 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
     // 최초 실행 시가 아니라 다른 동작을 액티비티가 켜져 있는 상태에서 실행하다가 액션 뷰 아이템 클릭했을 때
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_activity_search_query -> {
                 item.expandActionView()
-                return true
+                true
             }
             R.id.menu_activity_dummy -> {
                 item.setOnMenuItemClickListener { menuItem ->
                     Toast.makeText(this@SearchActivity, "Dummy: $menuItem", Toast.LENGTH_SHORT).show()
                     true
                 }
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
-    // 리사이클러뷰 각 itemview 클릭 이벤트 오버라이딩
+    // 리사이클러뷰 각 itemView 클릭 이벤트 오버라이딩
     override fun onItemClick(repository: GithubRepo) {
         val intent = Intent(this, RepositoryActivity::class.java)
         intent.putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
@@ -137,14 +127,15 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                 hideProgress()
 
                 val searchResult = response.body()
-                if (response.isSuccessful() && null != searchResult) {
-                    // 검색 결과를 adpater에 반영, notifyDataSetChanged() 메소드로 갱신
-                    adapter.setItems(searchResult.items.toMutableList())
-                    adapter.notifyDataSetChanged()
+                if (response.isSuccessful) {
+                    searchResult.let {
+                        adapter.items = it!!.items.toMutableList()
+                        adapter.notifyDataSetChanged()
 
-                    // 검색 결과가 없을 경우 처리
-                    if (0 == searchResult!!.totalCount) {
-                        showError(getString(R.string.no_search_result))
+                        // 검색 결과가 없을 경우 처리
+                        if (searchResult!!.totalCount == 0) {
+                            showError(getString(R.string.no_search_result))
+                        }
                     }
                 } else {
                     showError("Not successful: " + response.message())
@@ -162,7 +153,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     // 액션바 타이틀 업데이트
     private fun updateTitle(query: String) {
         val ab = supportActionBar
-        ab?.setSubtitle(query)
+        ab?.subtitle = query
     }
 
     // 키보드 숨기기
@@ -177,25 +168,25 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     }
 
     private fun clearResults() {
-        adapter.clearItems()
+        adapter.items.clear()
         adapter.notifyDataSetChanged()
     }
 
     private fun showProgress() {
-        progress.visibility = View.VISIBLE
+        pbActivitySearch.visibility = View.VISIBLE
     }
 
     private fun hideProgress() {
-        progress.visibility = View.GONE
+        pbActivitySearch.visibility = View.GONE
     }
 
     private fun showError(message: String?) {
-        tvMessage.text = message
-        tvMessage.visibility = View.VISIBLE
+        tvActivitySearchMessage.text = message
+        tvActivitySearchMessage.visibility = View.VISIBLE
     }
 
     private fun hideError() {
-        tvMessage.text = ""
-        tvMessage.visibility = View.GONE
+        tvActivitySearchMessage.text = ""
+        tvActivitySearchMessage.visibility = View.GONE
     }
 }

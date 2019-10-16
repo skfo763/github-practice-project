@@ -16,10 +16,9 @@ import java.util.*
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
 
     // RecyclerView 에 띄워줄 저장소 클래스의 리스트
-    private var items: MutableList<GithubRepo> = ArrayList()
+    var items: MutableList<GithubRepo> = ArrayList()
+    var listener: ItemClickListener? = null
     private val placeholder = ColorDrawable(Color.GRAY)
-
-    private var listener: ItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {
         return RepositoryHolder(parent)
@@ -28,25 +27,26 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
         // 각 아이템이 viewHolder 클래스에 바인딩되었을 때 호출되는 메소드
         // 개별 아이템에 대한 ui 설정을 이 메소드에서 해줌.
-
         val repo = items[position]
+        setItemViewUi(repo, holder)
+    }
 
+    private fun setItemViewUi(repo: GithubRepo, holder: RepositoryHolder) {
         GlideApp.with(holder.itemView.context)
                 .load(repo.owner.avatarUrl)
                 .placeholder(placeholder)
                 .into(holder.ivProfile)
 
-        holder.tvName.text = repo.fullName
-        holder.tvLanguage.text = if (TextUtils.isEmpty(repo.language))
-            holder.itemView.context.getText(R.string.no_language_specified)
-        else
-            repo.language
+        holder.apply {
+            tvName.text = repo.fullName
+            tvLanguage.text =
+                    if(TextUtils.isEmpty(repo.language)) holder.itemView.context.getText(R.string.no_language_specified)
+                    else repo.language
 
-        // 각 아이템뷰에 대한 클릭 이벤트
-        holder.itemView.setOnClickListener {
-            if (null != listener) {
+            // 각 아이템뷰에 대한 클릭 이벤트
+            itemView.setOnClickListener {
                 // 이 클래스 안에 정의되지 않은, 다른 클래스에서 구현된 인터페이스 본체를 실행
-                listener!!.onItemClick(repo)
+                listener?.onItemClick(repo)
             }
         }
     }
@@ -56,33 +56,11 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
         return items.size
     }
 
-    // RecyclerView 에 띄워줄 데이터 리스트를 인자로 받아오는 함수 -> 아마 처음 실행될 듯.
-    internal fun setItems(items: MutableList<GithubRepo>) {
-        this.items = items
-    }
-
-    // 타 클래스에서 상속한 listener 메소드를 클래스 내에서 사용하도록 하는 메소드.
-    internal fun setItemClickListener(listener: ItemClickListener?) {
-        this.listener = listener
-    }
-
-    // 모든 아이템을 0으로 초기화 -> Adapter를 unBinding 할 때 사용
-    internal fun clearItems() {
-        this.items.clear()
-    }
-
-    // 아이템뷰를 위한 component를 정의하기 위한 inner 클래스 : nested class
-    // Nested class에서 static을 붙이지 않으면 상위 클래스의 메소드나 변수를 사용할 수 있게 된다.
-    // 반면에 static nested class는 한 곳에서만(이 경우 itemview의 표현) 사용하는 클래스를 논리적으로 묶어서 처리하기 위해 사용한다.
-    // 즉, static을 붙임으로써 상위 클래스의 메소드나 변수를 사용하지 않겠다고 명시적으로 표시하는 것이다.
-    /* private 접근 제한자를 사용하지 않는 이유는, 이 클래스의 상위클래스인 SearchAdapter가 RecyclerView.Aapter를 상속받고
-       ViewHolder 클래스를 제네릭을 받는 부분(클래스 선언부: 클래스 외부)에서 이 클래스에 접근하고 있기 때문 */
     class RepositoryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.item_repository, parent, false)) {
         var ivProfile: ImageView = itemView.findViewById(R.id.ivItemRepositoryProfile)
         var tvName: TextView = itemView.findViewById(R.id.tvItemRepositoryName)
         var tvLanguage: TextView = itemView.findViewById(R.id.tvItemRepositoryLanguage)
-
     }
 
     // onclick 시 동작을 위한 메소드 오버라이딩 강제를 요청하는 인터페이스.

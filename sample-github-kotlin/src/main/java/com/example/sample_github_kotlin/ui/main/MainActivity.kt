@@ -5,19 +5,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sample_github_kotlin.R
 import com.example.sample_github_kotlin.ui.search.SearchActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
-    internal lateinit var btnSearch: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnSearch = findViewById(R.id.btnActivityMainSearch)
-
-        // 버튼 setOnClickListener 등록
-        btnSearch.setOnClickListener { startActivity(Intent(this@MainActivity, SearchActivity::class.java)) }
+        // java와 달리, 코틀린 안드로이드 익스텐션으로 findViewById 사용하지 않고 바로 맵핑 가능
+        btnActivityMainSearch.setOnClickListener { startActivity(Intent(this@MainActivity, SearchActivity::class.java)) }
     }
 }

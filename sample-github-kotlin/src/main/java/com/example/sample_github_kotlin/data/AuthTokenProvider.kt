@@ -24,6 +24,6 @@ class AuthTokenProvider// context를 인자로 받아 클래스 내부의 멤버
         // SharedPreference 객체를 활용해, web 상에서 얻을 수 있는 token 값을
         // 클래스 외부에서 접근 가능하도록 저장
 
-        private val KEY_AUTH_TOKEN = "auth_token"
+        private const val KEY_AUTH_TOKEN = "auth_token"
     }
 }

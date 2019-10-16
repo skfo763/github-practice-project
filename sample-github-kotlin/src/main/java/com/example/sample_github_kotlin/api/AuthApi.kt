@@ -1,7 +1,6 @@
 package com.example.sample_github_kotlin.api
 
 import com.example.sample_github_kotlin.api.model.GithubAccessToken
-
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -19,8 +18,7 @@ interface AuthApi {
     fun getAccessToken(
             @Field("client_id") clientId: String,
             @Field("client_secret") clientSecret: String,
-            @Field("code") code: String):
+            @Field("code") code: String
+    ): Call<GithubAccessToken>
 
-    // AccessToken 을 받아서, GithubAccessToken 클래스 형태로 변환 후 멤버 필드 이름에 자동으로 맵핑.
-            Call<GithubAccessToken>
 }
