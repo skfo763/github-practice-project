@@ -21,6 +21,7 @@ internal class SearchPresenter: SearchContract.Presenter {
         context = view
         api = GithubApiProvider.provideGithubApi((context as SearchActivity))
         adapter = SearchAdapter()
+        adapter.listener = context as SearchActivity
     }
 
     override fun detachView() {

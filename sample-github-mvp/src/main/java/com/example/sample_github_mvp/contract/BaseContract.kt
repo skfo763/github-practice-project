@@ -8,6 +8,7 @@ class BaseContract {
 
     interface Presenter<T> {
         fun attachView(view: T)
+
         fun detachView()
     }
 

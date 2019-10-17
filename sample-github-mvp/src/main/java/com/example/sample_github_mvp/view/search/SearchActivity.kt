@@ -16,6 +16,7 @@ import com.example.sample_github_mvp.presentor.SearchPresenter
 import com.example.sample_github_mvp.R
 import com.example.sample_github_mvp.contract.SearchContract
 import com.example.sample_github_mvp.model.GithubRepo
+import com.example.sample_github_mvp.presentor.RepoPresenter
 import com.example.sample_github_mvp.view.repo.RepositoryActivity
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
@@ -100,11 +101,11 @@ class SearchActivity : AppCompatActivity(), SearchContract.View, SearchAdapter.I
         return super.getApplicationContext()
     }
 
-    override fun onItemClick(repository: GithubRepo) {
-        Intent(this, RepositoryActivity::class.java).apply {
-            putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
-            intent.putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)
-            startActivity(this)
-        }
+    override fun onClick(repository: GithubRepo) {
+        println(repository.description)
+        val intent = Intent(this@SearchActivity, RepositoryActivity::class.java)
+                .putExtra(RepoPresenter.KEY_USER_LOGIN, repository.owner.login)
+                .putExtra(RepoPresenter.KEY_REPO_NAME, repository.name)
+        startActivity(intent)
     }
 }

@@ -8,7 +8,7 @@ class GithubRepo(
         // SerializedName annotation 을 추가하여 맵핑시켜줄 필드 이름을 지정해주면 됨
 
         val name: String, @field:SerializedName("full_name")
-        val fullName: String, val owner: GithubOwner, val description: String, val language: String,
+        val fullName: String, val owner: GithubOwner, var description: String, var language: String,
         @field:SerializedName("updated_at")
         val updatedAt: String, @field:SerializedName("stargazers_count")
         val stars: Int)
