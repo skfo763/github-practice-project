@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,7 +16,7 @@ import java.util.ArrayList
 
 class SearchAdapter: RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     var items: MutableList<GithubRepo> = ArrayList()
-    private var listener: ItemClickListener? = null
+    var listener: ItemClickListener? = null
     private val placeholder = ColorDrawable(Color.GRAY)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {
@@ -43,8 +44,7 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
 
             // 각 아이템뷰에 대한 클릭 이벤트
             itemView.setOnClickListener {
-                // 이 클래스 안에 정의되지 않은, 다른 클래스에서 구현된 인터페이스 본체를 실행
-                listener?.onItemClick(repo)
+                listener!!.onClick(repo)
             }
         }
     }
@@ -63,6 +63,6 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
 
     // onclick 시 동작을 위한 메소드 오버라이딩 강제를 요청하는 인터페이스.
     interface ItemClickListener {
-        fun onItemClick(repository: GithubRepo)
+        fun onClick(repository: GithubRepo)
     }
 }

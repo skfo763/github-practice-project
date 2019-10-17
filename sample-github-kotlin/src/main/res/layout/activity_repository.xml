@@ -35,7 +35,6 @@
                 android:layout_marginRight="12dp"
                 android:layout_toEndOf="@+id/ivActivityRepositoryProfile"
                 android:layout_toRightOf="@id/ivActivityRepositoryProfile"
-
                 android:orientation="vertical">
 
                 <TextView
@@ -48,15 +47,29 @@
                     android:textColor="@color/githubBlue"
                     tools:text="username/myrepository" />
 
-                <TextView
-                    android:id="@+id/tvActivityRepositoryStars"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_star_black"
-                    android:drawableStart="@drawable/ic_star_black"
-                    android:textAppearance="?android:textAppearanceSmall"
-                    android:textColor="@color/githubBlack"
-                    tools:text="100 Stars" />
+                    android:layout_height="25dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:background="@drawable/ic_star_black"
+                        android:layout_marginRight="5dp"
+                        tools:ignore="ContentDescription,RtlHardcoded" />
+
+                    <TextView
+                        android:id="@+id/tvActivityRepositoryStars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@color/githubBlack"
+                        tools:text="100 Stars" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </RelativeLayout>
