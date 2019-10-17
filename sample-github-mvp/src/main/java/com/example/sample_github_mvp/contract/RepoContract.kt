@@ -2,19 +2,17 @@ package com.example.sample_github_mvp.contract
 
 import android.content.Context
 import android.content.Intent
-import android.widget.ImageView
 import com.example.sample_github_mvp.model.GithubRepo
-import java.util.*
 
 interface RepoContract {
     interface View: BaseContract.View {
         fun showRepositoryInfo(repo: GithubRepo, date: String)    // 저장소 정보를 ui에 띄워줌
 
-        fun showError(message: String)
+        override fun showError(message: String)
 
         fun setImageView(uri: String)
         
-        fun showProgress()
+        override fun showProgress()
 
         fun hideProgress(isSucceed: Boolean)
 
