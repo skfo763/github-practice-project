@@ -1,13 +1,15 @@
 package com.androidhuman.example.samplegithub.ui.repo;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.androidhuman.example.samplegithub.R;
 import com.androidhuman.example.samplegithub.api.GithubApi;
@@ -88,7 +90,7 @@ public class RepositoryActivity extends AppCompatActivity {
         repoCall = api.getRepository(login, repoName);
         repoCall.enqueue(new Callback<GithubRepo>() {
             @Override
-            public void onResponse(Call<GithubRepo> call, Response<GithubRepo> response) {
+            public void onResponse(@NonNull Call<GithubRepo> call, @NonNull  Response<GithubRepo> response) {
                 hideProgress(true);
 
                 GithubRepo repo = response.body();
@@ -123,7 +125,7 @@ public class RepositoryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<GithubRepo> call, Throwable t) {
+            public void onFailure(@NonNull Call<GithubRepo> call, @NonNull Throwable t) {
                 hideProgress(false);
                 showError(t.getMessage());
             }

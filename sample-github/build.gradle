@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         // manifest.xml 파일의 각 항목 재정의
-        applicationId "com.androidhuman.example.simplegithub"
+        applicationId "com.androidhuman.example.samplegithub"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

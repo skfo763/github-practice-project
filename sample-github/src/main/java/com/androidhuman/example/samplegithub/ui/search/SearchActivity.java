@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
@@ -148,7 +149,7 @@ public class SearchActivity extends AppCompatActivity implements SearchAdapter.I
 
             // 호출 성공시
             @Override
-            public void onResponse(Call<RepoSearchResponse> call, Response<RepoSearchResponse> response) {
+            public void onResponse(@NonNull Call<RepoSearchResponse> call, @NonNull Response<RepoSearchResponse> response) {
                 hideProgress();
 
                 RepoSearchResponse searchResult = response.body();
@@ -168,7 +169,7 @@ public class SearchActivity extends AppCompatActivity implements SearchAdapter.I
 
             // 호출 실패시
             @Override
-            public void onFailure(Call<RepoSearchResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<RepoSearchResponse> call, @NonNull Throwable t) {
                 hideProgress();
                 showError(t.getMessage());
             }

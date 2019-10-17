@@ -1,6 +1,7 @@
 package com.androidhuman.example.samplegithub.api;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,7 +18,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class GithubApiProvider {
-
     // 액세스 토큰 획득을 위한 객체 생성
     public static AuthApi provideAuthApi() {
         return new Retrofit.Builder()

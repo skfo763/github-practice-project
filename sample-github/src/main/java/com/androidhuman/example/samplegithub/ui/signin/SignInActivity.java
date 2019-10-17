@@ -3,15 +3,16 @@ package com.androidhuman.example.samplegithub.ui.signin;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.androidhuman.example.samplegithub.BuildConfig;
 import com.androidhuman.example.samplegithub.R;
@@ -115,7 +116,7 @@ public class SignInActivity extends AppCompatActivity {
         // 요청에 대한 처리 완료시 사용할 콜백 등록
         accessTokenCall.enqueue(new Callback<GithubAccessToken>() {
             @Override
-            public void onResponse(Call<GithubAccessToken> call, Response<GithubAccessToken> response) {
+            public void onResponse(@NonNull Call<GithubAccessToken> call, @NonNull Response<GithubAccessToken> response) {
                 hideProgress();
 
                 GithubAccessToken token = response.body();
@@ -130,7 +131,7 @@ public class SignInActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<GithubAccessToken> call, Throwable t) {
+            public void onFailure(@NonNull Call<GithubAccessToken> call, @NonNull Throwable t) {
                 hideProgress();
                 showError(t);
             }

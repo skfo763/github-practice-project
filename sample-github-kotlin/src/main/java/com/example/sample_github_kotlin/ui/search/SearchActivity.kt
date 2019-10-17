@@ -1,6 +1,5 @@
 package com.example.sample_github_kotlin.ui.search
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -128,12 +127,12 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
                 val searchResult = response.body()
                 if (response.isSuccessful) {
-                    searchResult.let {
-                        adapter.items = it!!.items.toMutableList()
+                    searchResult?.let {
+                        adapter.items = it.items.toMutableList()
                         adapter.notifyDataSetChanged()
 
                         // 검색 결과가 없을 경우 처리
-                        if (searchResult!!.totalCount == 0) {
+                        if (searchResult.totalCount == 0) {
                             showError(getString(R.string.no_search_result))
                         }
                     }
