@@ -21,10 +21,10 @@ android {
         // manifest.xml 파일에서 정의할 수 있는 Github 앱 아이디 및 비밀번호를 gradle 을 통해서 정의함.
         // 하드코딩을 방지하기 위해 gradle.properties 파일에 아이디 및 비밀번호 정의해놓고 참조.
         buildConfigField "String", "GITHUB_CLIENT_ID",
-                project.properties["GITHUB_CLIENT_ID"] ?: "\"NOT_FOUND\""
+                project.properties["GITHUB_CLIENT_ID_KOTLIN"] ?: "\"NOT_FOUND\""
 
         buildConfigField "String", "GITHUB_CLIENT_SECRET",
-                project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
+                project.properties["GITHUB_CLIENT_SECRET_KOTLIN"] ?: "\"NOT_FOUND\""
     }
 
     buildTypes {

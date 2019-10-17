@@ -1,6 +1,7 @@
 package com.example.sample_github_mvp.view.search
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -14,10 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sample_github_mvp.presentor.SearchPresenter
 import com.example.sample_github_mvp.R
 import com.example.sample_github_mvp.contract.SearchContract
+import com.example.sample_github_mvp.model.GithubRepo
+import com.example.sample_github_mvp.view.repo.RepositoryActivity
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
 
-class SearchActivity : AppCompatActivity(), SearchContract.View {
+class SearchActivity : AppCompatActivity(), SearchContract.View, SearchAdapter.ItemClickListener {
     private lateinit var searchPresenter: SearchPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,8 +62,8 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         if(rvActivitySearchList.adapter == null) {
             rvActivitySearchList.layoutManager = LinearLayoutManager(this)
             rvActivitySearchList.adapter = adapter
-
         } else {
+            println("notify")
             rvActivitySearchList.adapter!!.notifyDataSetChanged()
         }
     }
@@ -95,5 +98,13 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     override fun getApplicationContext(): Context {
         return super.getApplicationContext()
+    }
+
+    override fun onItemClick(repository: GithubRepo) {
+        Intent(this, RepositoryActivity::class.java).apply {
+            putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
+            intent.putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)
+            startActivity(this)
+        }
     }
 }

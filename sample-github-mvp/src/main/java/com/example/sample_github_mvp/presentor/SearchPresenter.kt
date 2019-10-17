@@ -1,6 +1,6 @@
 package com.example.sample_github_mvp.presentor
 
-import com.example.sample_github_kotlin.api.GithubApiProvider
+import com.example.sample_github_mvp.api.GithubApiProvider
 import com.example.sample_github_mvp.R
 import com.example.sample_github_mvp.api.GithubApi
 import com.example.sample_github_mvp.contract.SearchContract
@@ -45,6 +45,7 @@ internal class SearchPresenter: SearchContract.Presenter {
                 if(response.isSuccessful) {
                     searchResult?.let {
                         adapter.items = it.items.toMutableList()
+                        context.updateRecyclerView(adapter)
 
                         if(searchResult.totalCount == 0) {
                             context.showError((context as SearchActivity).getString(R.string.no_search_result))

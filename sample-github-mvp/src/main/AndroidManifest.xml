@@ -40,10 +40,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- 콜백 시 받는 데이터 -->
-                <!-- host가 authorize, scheme가 sample_github_kotlin 이므로, sample_github_kotlin://authorize url 주소를 열 수 있음 -->
+                <!-- host가 authorize, scheme가 samplegithubmvp 이므로, samplegithubmvp://authorize url 주소를 열 수 있음 -->
                 <data
                     android:host="authorize"
-                    android:scheme="sample_github_kotlin" />
+                    android:scheme="samplegithubmvp" />
             </intent-filter>
         </activity>
 

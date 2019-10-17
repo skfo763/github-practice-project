@@ -1,5 +1,6 @@
 package com.example.sample_github_mvp.contract
 
+import android.content.Context
 import android.net.Uri
 
 interface SignInContract {
@@ -11,6 +12,8 @@ interface SignInContract {
         fun showError(throwable: Throwable)
 
         fun launchMainActivity()
+
+        fun getAppContext(): Context
     }
 
     interface Presenter: BaseContract.Presenter<View> {

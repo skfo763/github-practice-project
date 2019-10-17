@@ -13,9 +13,7 @@ import com.example.sample_github_kotlin.api.model.GithubRepo
 import com.example.sample_github_kotlin.ui.GlideApp
 import java.util.*
 
-class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
-
-    // RecyclerView 에 띄워줄 저장소 클래스의 리스트
+internal class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     var items: MutableList<GithubRepo> = ArrayList()
     var listener: ItemClickListener? = null
     private val placeholder = ColorDrawable(Color.GRAY)
@@ -25,8 +23,6 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     }
 
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
-        // 각 아이템이 viewHolder 클래스에 바인딩되었을 때 호출되는 메소드
-        // 개별 아이템에 대한 ui 설정을 이 메소드에서 해줌.
         val repo = items[position]
         setItemViewUi(repo, holder)
     }
@@ -43,9 +39,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
                     if(TextUtils.isEmpty(repo.language)) holder.itemView.context.getText(R.string.no_language_specified)
                     else repo.language
 
-            // 각 아이템뷰에 대한 클릭 이벤트
             itemView.setOnClickListener {
-                // 이 클래스 안에 정의되지 않은, 다른 클래스에서 구현된 인터페이스 본체를 실행
                 listener?.onItemClick(repo)
             }
         }

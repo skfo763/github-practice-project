@@ -1,23 +1,17 @@
 package com.example.sample_github_kotlin.data
 
 import android.content.Context
-import android.preference.PreferenceManager
+import android.content.SharedPreferences
 
-class AuthTokenProvider// context를 인자로 받아 클래스 내부의 멤버 필드에 초기화시켜주는 생성자
-(private val context: Context) {
+class AuthTokenProvider(context: Context) {
+    private val sharedPreferences = context.getSharedPreferences(KEY_AUTH_TOKEN, Context.MODE_PRIVATE)
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-    // SharedPreference 에 저장되어 있는 Token 값을 반환
-    // 저장되어 있는 값이 없으면 null 반환
     val token: String?
-        get() = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(KEY_AUTH_TOKEN, null)
+        get() = sharedPreferences.getString(KEY_AUTH_TOKEN, null)
 
-    // 현재 토큰 값을 인자로 들어오는 String token 으로 업데이트하는 메소드
-    // SharedPreferences에 액세스 토큰을 저장
     fun updateToken(token: String) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(KEY_AUTH_TOKEN, token)
-                .apply()
+        editor.putString(KEY_AUTH_TOKEN, token).apply()
     }
 
     companion object {

@@ -30,7 +30,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     
     internal lateinit var api: GithubApi
     private lateinit var searchCall: Call<RepoSearchResponse>
-    lateinit var adapter: SearchAdapter
+    internal lateinit var adapter: SearchAdapter
     private lateinit var menuSearch: MenuItem
     private lateinit var menuDummy: MenuItem
     private lateinit var searchView: SearchView

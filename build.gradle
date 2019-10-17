@@ -14,7 +14,6 @@ buildscript {
         // 안드로이드 gradle 플러그인 버전 기술
         // dependencies.gradle 파일 내에 정의된 androidPluginVersion 을 참조
         classpath "com.android.tools.build:gradle:$androidPluginVersion"
-
         // 코틀린 gradle 플러그인을 추가
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"

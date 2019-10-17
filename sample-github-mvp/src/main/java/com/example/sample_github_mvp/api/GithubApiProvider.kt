@@ -1,10 +1,6 @@
-package com.example.sample_github_kotlin.api
+package com.example.sample_github_mvp.api
 
 import android.content.Context
-import com.example.sample_github_mvp.api.AuthApi
-import com.example.sample_github_mvp.api.AuthTokenProvider
-import com.example.sample_github_mvp.api.GithubApi
-import com.example.sample_github_mvp.contract.SearchContract
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response

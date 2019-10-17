@@ -14,9 +14,8 @@ import com.example.sample_github_mvp.view.GlideApp
 import java.util.ArrayList
 
 class SearchAdapter: RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
-    // RecyclerView 에 띄워줄 저장소 클래스의 리스트
     var items: MutableList<GithubRepo> = ArrayList()
-    var listener: ItemClickListener? = null
+    private var listener: ItemClickListener? = null
     private val placeholder = ColorDrawable(Color.GRAY)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {

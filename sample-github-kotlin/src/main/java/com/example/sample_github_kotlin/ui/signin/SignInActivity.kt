@@ -3,6 +3,7 @@ package com.example.sample_github_kotlin.ui.signin
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,19 +38,17 @@ class SignInActivity : AppCompatActivity() {
                     .appendPath("authorize")
                     .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
                     .build()
-
+            Log.i("TAG", "Uri: $authUri")
             CustomTabsIntent.Builder().build().apply { launchUrl(this@SignInActivity, authUri) }
         }
 
         api = GithubApiProvider.provideAuthApi()
         authTokenProvider = AuthTokenProvider(this)
-
         authTokenProvider.token?.let { launchMainActivity() }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-
         showProgress()
 
         // 사용자 인증 후 리디렉션된 주소를 가져옴
@@ -57,7 +56,6 @@ class SignInActivity : AppCompatActivity() {
 
         // 리디렉션 주소에서 액세스 토큰 교환에 필요한 코드 데이터를 parsing
         val code = uri.getQueryParameter("code") ?: throw IllegalStateException("No code exists")
-
         getAccessToken(code)
     }
 

@@ -1,8 +1,9 @@
 package com.example.sample_github_mvp.presentor
 
+import android.content.Intent
 import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
-import com.example.sample_github_kotlin.api.GithubApiProvider
+import android.util.Log
+import com.example.sample_github_mvp.api.GithubApiProvider
 import com.example.sample_github_mvp.BuildConfig
 import retrofit2.Call
 import retrofit2.Callback
@@ -10,7 +11,7 @@ import com.example.sample_github_mvp.api.AuthApi
 import com.example.sample_github_mvp.api.AuthTokenProvider
 import com.example.sample_github_mvp.contract.SignInContract
 import com.example.sample_github_mvp.model.GithubAccessToken
-import com.example.sample_github_mvp.view.signin.SignInActivity
+import com.example.sample_github_mvp.view.search.SearchActivity
 import retrofit2.Response
 import java.lang.IllegalStateException
 
@@ -18,10 +19,12 @@ internal class SignInPresenter: SignInContract.Presenter {
     private lateinit var api: AuthApi
     private lateinit var context: SignInContract.View
     private lateinit var accessTokenCall: Call<GithubAccessToken>
+    private lateinit var authTokenProvider: AuthTokenProvider
 
     override fun attachView(view: SignInContract.View) {
         context = view
         api = GithubApiProvider.provideAuthApi()
+        authTokenProvider = AuthTokenProvider(context.getAppContext())
     }
 
     override fun detachView() {
@@ -45,7 +48,7 @@ internal class SignInPresenter: SignInContract.Presenter {
                 val token = response.body()
                 if (response.isSuccessful) {
                     token?.let {
-                        (context as SignInActivity).authTokenProvider.updateToken(token.accessToken)
+                        authTokenProvider.updateToken(token.accessToken)
                         context.launchMainActivity()
                     }
                 } else {
@@ -53,5 +56,27 @@ internal class SignInPresenter: SignInContract.Presenter {
                 }
             }
         })
+    }
+
+    fun onButtonClicked(): Uri {
+        return getUri().apply {
+            Log.i("TAG", this.toString())
+        }
+    }
+
+    private fun getUri(): Uri {
+        return Uri.Builder().scheme("https").authority("github.com")
+                .appendPath("login")
+                .appendPath("oauth")
+                .appendPath("authorize")
+                .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
+                .build()
+    }
+
+    fun setOnNewIntentCalled(intent: Intent) {
+        context.showProgress()
+        val uri = intent.data ?: throw IllegalArgumentException("No data exists")
+        val code = uri.getQueryParameter("code") ?: throw IllegalStateException("No code exists")
+        getAccessToken(code)
     }
 }
