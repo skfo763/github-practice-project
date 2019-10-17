@@ -1,13 +1,12 @@
 package com.example.sample_github_mvp.contract
 
 import android.content.Context
-import android.net.Uri
 
 interface SignInContract {
     interface View: BaseContract.View {
-        fun showProgress()
+        override fun showProgress()
 
-        fun hideProgress()
+        override fun hideProgress()
 
         fun showError(throwable: Throwable)
 

@@ -8,11 +8,11 @@ import com.example.sample_github_mvp.view.search.SearchAdapter
 interface SearchContract {
 
     interface View: BaseContract.View {
-        fun showProgress()
+        override fun showProgress()
 
-        fun hideProgress()
+        override fun hideProgress()
 
-        fun showError(message: String)
+        override fun showError(message: String)
 
         fun hideError()
 

@@ -7,11 +7,11 @@ interface RepoContract {
     interface View: BaseContract.View {
         fun showRepositoryInfo(repo: GithubRepo)    // 저장소 정보를 ui에 띄워줌
 
-        fun showError(message: String)
-        
-        fun showProgress()
+        override fun showError(message: String)
 
-        fun hideProgress()
+        override fun showProgress()
+
+        override fun hideProgress()
     }
 
     interface Presenter: BaseContract.Presenter<View> {
