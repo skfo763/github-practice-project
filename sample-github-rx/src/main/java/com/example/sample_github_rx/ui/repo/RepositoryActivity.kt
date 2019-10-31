@@ -35,11 +35,9 @@ class RepositoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_repository)
         api = GithubApiProvider.provideGithubApi(this)
 
-        // 액티비티 호출 시 전달받은 user login 엑스트라 추출
         val login = intent.getStringExtra(KEY_USER_LOGIN)
                 ?: throw IllegalArgumentException("No login info exists in extras")
 
-        // 액티비티 호출 시 전달받은 저장소 이름 엑스트라 추출
         val repo = intent.getStringExtra(KEY_REPO_NAME)
                 ?: throw IllegalArgumentException("No repo info exists in extras")
 
