@@ -7,9 +7,9 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.GithubApiProvider
 import com.example.sample_github_rx.api.model.GithubRepo
+import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.ui.GlideApp
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_repository.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -24,15 +24,12 @@ class RepositoryActivity : AppCompatActivity() {
     private var dateFormatToShow = SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // private lateinit var repoCall: Call<GithubRepo>
-    // private lateinit var searchCall: Call<RepoSearchResponse>
-    // 위에 나타난 searchCall 대신에, RxJava 의 Disposable 객체를 관리할 수 있는
-    // CompositeDisposable 객체 초기화 하여 콜백 대신 사용
-    private val disposable = CompositeDisposable()
+    private val disposable = AutoClearedDisposable(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repository)
+        lifecycle.addObserver(disposable)
         api = GithubApiProvider.provideGithubApi(this)
 
         val login = intent.getStringExtra(KEY_USER_LOGIN)
@@ -45,7 +42,6 @@ class RepositoryActivity : AppCompatActivity() {
     }
 
     private fun showRepositoryInfo(login: String, repoName: String) {
-        // 이전에 작성했던 콜백 방식의 호출 전부 삭제. disposable 객체를 활용하여 reactive 비동기 호출
         disposable.add(api.getRepository(login, repoName)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { showProgress() }
@@ -79,11 +75,6 @@ class RepositoryActivity : AppCompatActivity() {
                     showError(it.message)
                 }
         )
-    }
-
-    override fun onStop() {
-        super.onStop()
-        disposable.clear()
     }
 
     // 받아온 정보가 비어있는지, 잘못 파싱되었는지 처리하는 로직을 함수로 구별하여 정리
