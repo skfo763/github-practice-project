@@ -1,1 +1,1 @@
-include ':sample-github-rx', 'sample-github', 'sample-github-mvp'
+include ':sample-github-rx'
