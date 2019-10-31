@@ -1,27 +1,20 @@
 buildscript {
     ext.kotlin_version = '1.3.50'
-
-    // dependencies.gradle 파일에 정의된 내용을 모든 프로젝트에서 사용할 수 있도록 하는 buildscript
     apply from: file('dependencies.gradle')
 
     repositories {
-        // Gradle build plugin 을 다운 받는 원격 저장소 위치
         google()
         jcenter()
     }
 
     dependencies {
-        // 안드로이드 gradle 플러그인 버전 기술
-        // dependencies.gradle 파일 내에 정의된 androidPluginVersion 을 참조
         classpath "com.android.tools.build:gradle:$androidPluginVersion"
-        // 코틀린 gradle 플러그인을 추가
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
-    // 모든 프로젝트에서 공통으로 사용할 다운로드용 원격 저장소 위치
     repositories {
         google()
         jcenter()

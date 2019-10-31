@@ -1,5 +1,4 @@
 ext {
-    // Build configuration
     buildToolsVersion = '27.0.2'
     minSdkVersion = 15
     compileSdkVersion = 28
@@ -7,8 +6,9 @@ ext {
 
     androidPluginVersion = '3.5.1'
     kotlinVersion = '1.3.50'
+    rxAndroidVersion = '2.0.1'
+    rxJavaVersion = '2.1.3'
 
-    // Library
     glideVersion = '4.10.0'
     gsonVersion = '2.7'
     okHttpVersion = '3.8.1'
