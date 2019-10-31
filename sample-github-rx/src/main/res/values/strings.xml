@@ -12,5 +12,5 @@
     <string name="start_with_github">Start with Github</string>
     <string name="unknown">Unknown</string>
     <string name="view_repository">View repository</string>
-    <string name="dummy">dummy</string>
+    <string name="clearall">Clear all</string>
 </resources>

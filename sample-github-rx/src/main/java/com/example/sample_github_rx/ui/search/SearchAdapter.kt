@@ -57,7 +57,6 @@ internal class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHold
         var tvLanguage: TextView = itemView.findViewById(R.id.tvItemRepositoryLanguage)
     }
 
-    // onclick 시 동작을 위한 메소드 오버라이딩 강제를 요청하는 인터페이스.
     interface ItemClickListener {
         fun onItemClick(repository: GithubRepo)
     }

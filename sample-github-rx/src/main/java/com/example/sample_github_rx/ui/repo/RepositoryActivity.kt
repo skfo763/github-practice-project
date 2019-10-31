@@ -114,9 +114,7 @@ class RepositoryActivity : AppCompatActivity() {
         tvActivityRepositoryMessage.visibility = View.VISIBLE
     }
 
-    // 동반 객체로 설정하여 다른 클래스에서도 참조할 수 있도록 함.
     companion object {
-        // const 예약어를 통해 상수로 설정
         const val KEY_USER_LOGIN = "user_login"
         const val KEY_REPO_NAME = "repo_name"
     }

@@ -18,9 +18,12 @@ import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.GithubApiProvider
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
+import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
 
@@ -30,9 +33,11 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     internal lateinit var api: GithubApi
     internal lateinit var adapter: SearchAdapter
     private lateinit var menuSearch: MenuItem
-    private lateinit var menuDummy: MenuItem
     private lateinit var searchView: SearchView
+
     private val disposable = AutoClearedDisposable(this)
+    // by lazy 구문을 통해 선언과 동시에 초기
+    internal val searchHistoryDao by lazy { provideSerachHistoryDao(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +55,6 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_activity_search, menu)
         menuSearch = menu.findItem(R.id.menu_activity_search_query)
-        menuDummy = menu.findItem(R.id.menu_activity_dummy)
-
-        menuDummy.setOnMenuItemClickListener { menuItem ->
-            Toast.makeText(this@SearchActivity, "Dummy: $menuItem", Toast.LENGTH_SHORT).show()
-            true
-        }
 
         searchView = menuSearch.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -83,22 +82,28 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                 item.expandActionView()
                 true
             }
-            R.id.menu_activity_dummy -> {
-                item.setOnMenuItemClickListener { menuItem ->
-                    Toast.makeText(this@SearchActivity, "Dummy: $menuItem", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onItemClick(repository: GithubRepo) {
+        addDataToDatabase(repository)
         val intent = Intent(this, RepositoryActivity::class.java)
         intent.putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
         intent.putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)
         startActivity(intent)
+    }
+
+    private fun addDataToDatabase(repository: GithubRepo) {
+        disposable.add(Completable
+                .fromCallable { searchHistoryDao.insert(repository) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    Toast.makeText(this, "Uploading data to database...", Toast.LENGTH_SHORT).show()
+                }
+                .subscribe()
+        )
     }
 
     private fun searchRepository(query: String) {

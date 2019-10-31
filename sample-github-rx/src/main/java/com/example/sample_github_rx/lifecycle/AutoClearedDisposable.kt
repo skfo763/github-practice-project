@@ -25,7 +25,6 @@ class AutoClearedDisposable (
         if(!alwaysClearOnStop && !lifecycleOwner.isFinishing) {
             return
         }
-
         compositeDisposable.clear()
     }
 
