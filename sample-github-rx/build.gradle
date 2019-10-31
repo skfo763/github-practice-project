@@ -16,10 +16,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "GITHUB_CLIENT_ID",
-                project.properties["GITHUB_CLIENT_ID"] ?: "\"NOT_FOUND\""
+                project.properties["GITHUB_CLIENT_ID_RX"] ?: "\"NOT_FOUND\""
 
         buildConfigField "String", "GITHUB_CLIENT_SECRET",
-                project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
+                project.properties["GITHUB_CLIENT_SECRET_RX"] ?: "\"NOT_FOUND\""
     }
 
     buildTypes {
