@@ -108,7 +108,15 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                     searchRepository(it)
                 })
 
-        menuSearch.expandActionView()
+        viewDisposables.add(viewModel.lastSearchKeyword
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    if(it.isEmpty) {
+                        menuSearch.expandActionView()
+                    } else {
+                        updateTitle(it.value)
+                    }
+                })
         return true
     }
 
@@ -135,9 +143,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     }
 
     private fun searchRepository(query: String) {
-
-
-
+        disposable.add(viewModel.searchRespository(query))
     }
 
     private fun updateTitle(query: String) {
@@ -153,11 +159,6 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
     private fun collapseSearchView() {
         menuSearch.collapseActionView()
-    }
-
-    private fun clearResults() {
-        adapter.items.clear()
-        adapter.notifyDataSetChanged()
     }
 
     private fun showProgress() {
