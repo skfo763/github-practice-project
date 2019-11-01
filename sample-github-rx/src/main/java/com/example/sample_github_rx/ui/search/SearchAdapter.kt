@@ -50,6 +50,10 @@ internal class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHold
         return items.size
     }
 
+    fun clearItems() {
+        this.items.clear()
+    }
+
     class RepositoryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.item_repository, parent, false)) {
         var ivProfile: ImageView = itemView.findViewById(R.id.ivItemRepositoryProfile)

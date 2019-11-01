@@ -20,9 +20,11 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
+import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
@@ -36,8 +38,8 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     private lateinit var searchView: SearchView
 
     private val disposable = AutoClearedDisposable(this)
-    // by lazy 구문을 통해 선언과 동시에 초기
-    internal val searchHistoryDao by lazy { provideSerachHistoryDao(this) }
+    private val viewDisposable = CompositeDisposable()
+    private val searchHistoryDao by lazy { provideSerachHistoryDao(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +70,33 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                return false
+                viewDisposable.add(searchView.queryTextChangeEvents()
+                        .filter{ it.isSubmitted }
+                        .map { it.queryText }
+                        .filter{ it.isNotEmpty() }
+                        .map { it.toString() }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            updateTitle(it)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                hideSoftKeyboard()
+                            }
+                            collapseSearchView()
+                            searchRepository(it)
+                        }
+                )
+                return true
             }
         })
 
         menuSearch.expandActionView()
         return true
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if(isFinishing) viewDisposable.clear()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

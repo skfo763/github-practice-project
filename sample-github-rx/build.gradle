@@ -48,19 +48,38 @@ dependencies {
     implementation "com.google.code.gson:gson:$gsonVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
+
     implementation "android.arch.lifecycle:extensions:$archComponentVersion"
     implementation "android.arch.persistence.room:runtime:$archComponentVersion"
     implementation "android.arch.persistence.room:rxjava2:$archComponentVersion"
+
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxBindingVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding-core:$rxBindingVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBindingVersion"
+    implementation 'com.jakewharton.rxbinding3:rxbinding-drawerlayout:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-leanback:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-recyclerview:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:3.0.0'
+    implementation 'com.jakewharton.rxbinding3:rxbinding-viewpager:3.0.0'
+
     implementation 'androidx.browser:browser:1.0.0'
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
 
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
     kapt "android.arch.lifecycle:compiler:$archComponentVersion"
     kapt "android.arch.persistence.room:compiler:$archComponentVersion"
-
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
 }

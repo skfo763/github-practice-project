@@ -14,6 +14,5 @@ private fun provideDatabase(context: Context): SimpleGithubDatabase {
                 SimpleGithubDatabase::class.java, "simple_github.db")
                 .build()
     }
-
     return instance!!
 }

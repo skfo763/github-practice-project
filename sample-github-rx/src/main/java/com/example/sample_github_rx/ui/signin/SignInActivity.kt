@@ -5,13 +5,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.AuthApi
-import com.example.sample_github_rx.api.GithubApiProvider
+import com.example.sample_github_rx.api.GithubApiProvider.provideAuthApi
 import com.example.sample_github_rx.data.AuthTokenProvider
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.ui.main.MainActivity
@@ -20,14 +19,18 @@ import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
 
-    internal lateinit var api: AuthApi
-    private lateinit var authTokenProvider: AuthTokenProvider
     private val disposables = AutoClearedDisposable(this)
+    private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
+    private val viewModelFactory by lazy { SignInViewModelFactory(provideAuthApi(), AuthTokenProvider(this)) }
+    private lateinit var viewModel: SignViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
+        viewModel = ViewModelProviders.of(this, viewModelFactory) [SignViewModel::class.java]
+
         lifecycle.addObserver(disposables)
+        lifecycle.addObserver(viewDisposable)
 
         btnActivitySignInStart.setOnClickListener {
             val authUri = Uri.Builder().scheme("https").authority("github.com")
@@ -40,10 +43,26 @@ class SignInActivity : AppCompatActivity() {
             CustomTabsIntent.Builder().build().apply { launchUrl(this@SignInActivity, authUri) }
         }
 
-        api = GithubApiProvider.provideAuthApi()
-        authTokenProvider = AuthTokenProvider(this)
-        authTokenProvider.token?.let { launchMainActivity() }
+        viewDisposable.add(viewModel.accessToken
+                .filter{ !it.isEmpty }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{ launchMainActivity() })
 
+        viewDisposable.add(viewModel.message
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{ showError(it) })
+
+        viewDisposable.add(viewModel.isLoading
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{
+                    if(it) {
+                        showProgress()
+                    } else {
+                        hideProgress()
+                    }
+                })
+
+        disposables.add(viewModel.loadAccessToken())
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -55,17 +74,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun getAccessToken(code: String) {
-        disposables.add(api.getAccessToken(BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, code)
-                .map { it.accessToken }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { showProgress() }
-                .doOnTerminate { hideProgress() }
-                .subscribe ({ token ->
-                    authTokenProvider.updateToken(token)
-                    launchMainActivity()
-                }) {
-                    showError(it)
-                }
+        disposables.add(viewModel.requestAccessToken(
+                BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, code)
         )
     }
 
@@ -79,8 +89,8 @@ class SignInActivity : AppCompatActivity() {
         pbActivitySignIn.visibility = View.GONE
     }
 
-    private fun showError(throwable: Throwable) {
-        Toast.makeText(this, throwable.message, Toast.LENGTH_LONG).show()
+    private fun showError(text: String) {
+        Log.e("TAG", text)
     }
 
     private fun launchMainActivity() {
