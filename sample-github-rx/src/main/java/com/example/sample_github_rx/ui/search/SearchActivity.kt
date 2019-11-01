@@ -8,28 +8,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApi
-import com.example.sample_github_rx.api.GithubApiProvider
 import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
-import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
-import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
 
@@ -101,10 +91,6 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         menuSearch = menu.findItem(R.id.menu_activity_search_query)
 
         searchView = menuSearch.actionView as SearchView
-
-        viewDisposables.add()
-
-        viewDisposables.add()
 
         menuSearch.expandActionView()
         return true

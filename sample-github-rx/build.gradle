@@ -52,7 +52,9 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
-    implementation 'com.jakewharton.rxbinding3:rxbinding:3.0.0'
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxBindingVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding-core:$rxBindingVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBindingVersion"
     implementation "android.arch.lifecycle:extensions:$archComponentVersion"
     implementation "android.arch.persistence.room:runtime:$archComponentVersion"
     implementation "android.arch.persistence.room:rxjava2:$archComponentVersion"
