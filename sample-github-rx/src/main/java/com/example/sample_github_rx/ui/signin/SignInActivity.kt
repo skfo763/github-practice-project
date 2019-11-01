@@ -1,5 +1,6 @@
 package com.example.sample_github_rx.ui.signin
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,10 +9,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.AuthApi
-import com.example.sample_github_rx.api.GithubApiProvider
+import com.example.sample_github_rx.api.GithubApiProvider.provideAuthApi
 import com.example.sample_github_rx.data.AuthTokenProvider
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.ui.main.MainActivity
@@ -20,14 +22,41 @@ import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
 
-    internal lateinit var api: AuthApi
-    private lateinit var authTokenProvider: AuthTokenProvider
+    /*internal lateinit var api: AuthApi
+    private lateinit var authTokenProvider: AuthTokenProvider*/
+
     private val disposables = AutoClearedDisposable(this)
+    private val viewDisposables = AutoClearedDisposable(this, false)
+    private val viewModelFactory by lazy { SignInViewModelFactory(provideAuthApi(), AuthTokenProvider()) }
+    private lateinit var viewModel: SigninViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
+        viewModel = ViewModelProviders.of(this, viewModelFactory) [SigninViewModel::class.java]
         lifecycle.addObserver(disposables)
+        lifecycle.addObserver(viewDisposables)
+
+        viewDisposables.add(viewModel.accessToken
+                .filter { !it.isEmpty }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { launchMainActivity() })
+
+        viewDisposables.add(viewModel.message
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { showError(it)})
+
+        viewDisposables.add(viewModel.isLoading
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { isLoading ->
+                    if(isLoading) {
+                        showProgress()
+                    } else {
+                        hideProgress()
+                    }
+                })
+
+        disposables.add(viewModel.loadAccessToken())
 
         btnActivitySignInStart.setOnClickListener {
             val authUri = Uri.Builder().scheme("https").authority("github.com")
@@ -39,11 +68,6 @@ class SignInActivity : AppCompatActivity() {
             Log.i("TAG", "Uri: $authUri")
             CustomTabsIntent.Builder().build().apply { launchUrl(this@SignInActivity, authUri) }
         }
-
-        api = GithubApiProvider.provideAuthApi()
-        authTokenProvider = AuthTokenProvider(this)
-        authTokenProvider.token?.let { launchMainActivity() }
-
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -55,18 +79,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun getAccessToken(code: String) {
-        disposables.add(api.getAccessToken(BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET, code)
-                .map { it.accessToken }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { showProgress() }
-                .doOnTerminate { hideProgress() }
-                .subscribe ({ token ->
-                    authTokenProvider.updateToken(token)
-                    launchMainActivity()
-                }) {
-                    showError(it)
-                }
-        )
+        disposables.add(viewModel.requestAccessToken(BuildConfig.GITHUB_CLIENT_ID,
+                BuildConfig.GITHUB_CLIENT_SECRET, code))
     }
 
     private fun showProgress() {
@@ -79,8 +93,8 @@ class SignInActivity : AppCompatActivity() {
         pbActivitySignIn.visibility = View.GONE
     }
 
-    private fun showError(throwable: Throwable) {
-        Toast.makeText(this, throwable.message, Toast.LENGTH_LONG).show()
+    private fun showError(text: String) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show()
     }
 
     private fun launchMainActivity() {
