@@ -15,7 +15,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RepositoryActivity : AppCompatActivity() {
 
     internal lateinit var api: GithubApi
@@ -49,51 +48,33 @@ class RepositoryActivity : AppCompatActivity() {
                 .doOnError { hideProgress(false) }
                 .doOnComplete { hideProgress(true) }
                 .subscribe({ repo ->
-                    GlideApp.with(this@RepositoryActivity).load(repo.owner.avatarUrl).into(ivActivityRepositoryProfile)
-                    tvActivityRepositoryName.text = repo.fullName
-                    tvActivityRepositoryStars.text = resources.getQuantityText(R.plurals.star, repo.stars)
-
-                    if(repo.description == null) {
-                        tvActivityRepositoryDescription.setText(R.string.no_description_provided)
-                    } else {
-                        tvActivityRepositoryDescription.text = repo.description
-                    }
-
-                    if(repo.language == null) {
-                        tvActivityRepositoryLanguage.setText(R.string.no_language_specified)
-                    } else {
-                        tvActivityRepositoryLanguage.text = repo.language
-                    }
-
-                    try {
-                        val lastUpdate = dateFormatInResponse.parse(repo.updatedAt)
-                        tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate)
-                    } catch (e: ParseException) {
-                        tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
-                    }
+                    setUiAtOnSubscribe(repo)
                 }) {
                     showError(it.message)
                 }
         )
     }
 
-    // 받아온 정보가 비어있는지, 잘못 파싱되었는지 처리하는 로직을 함수로 구별하여 정리
-    private fun checkInformation(repo: GithubRepo) {
-        if (repo.description.isEmpty()) {
-            tvActivityRepositoryDescription.text = getText(R.string.no_description_provided)
+    private fun setUiAtOnSubscribe(repo: GithubRepo) {
+        GlideApp.with(this@RepositoryActivity).load(repo.owner.avatarUrl).into(ivActivityRepositoryProfile)
+        tvActivityRepositoryName.text = repo.fullName
+        tvActivityRepositoryStars.text = resources.getQuantityText(R.plurals.star, repo.stars)
+
+        if(repo.description.isNullOrEmpty()) {
+            tvActivityRepositoryDescription.setText(R.string.no_description_provided)
         } else {
             tvActivityRepositoryDescription.text = repo.description
         }
 
-        if (repo.language.isEmpty()) {
-            tvActivityRepositoryLanguage.text = getText(R.string.no_language_specified)
+        if(repo.language.isNullOrEmpty()) {
+            tvActivityRepositoryLanguage.setText(R.string.no_language_specified)
         } else {
             tvActivityRepositoryLanguage.text = repo.language
         }
 
         try {
             val lastUpdate = dateFormatInResponse.parse(repo.updatedAt)
-            tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate!!)
+            lastUpdate?.let { tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate) }
         } catch (e: ParseException) {
             tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
         }

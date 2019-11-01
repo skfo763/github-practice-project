@@ -11,8 +11,8 @@ class GithubRepo(
         val name: String,
         @PrimaryKey @ColumnInfo(name = "full_name") @SerializedName("full_name") val fullName: String,
         @Embedded val owner: GithubOwner,
-        val description: String,
-        val language: String,
+        val description: String?,
+        val language: String?,
         @ColumnInfo(name = "updated_at") @SerializedName("updated_at") val updatedAt: String,
         @SerializedName("stargazers_count") val stars: Int
 )
