@@ -10,12 +10,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 
 class SigninViewModel (val api: AuthApi, val authTokenProvider: AuthTokenProvider): ViewModel() {
 
     val accessToken: BehaviorSubject<SupportOptional<String>> = BehaviorSubject.create()
-    val message: PublishSubject<String> = PublishSubject.create()
+    val message: BehaviorSubject<String> = BehaviorSubject.create()
     val isLoading: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
 
     fun loadAccessToken(): Disposable

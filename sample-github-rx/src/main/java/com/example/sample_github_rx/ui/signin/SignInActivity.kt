@@ -1,6 +1,5 @@
 package com.example.sample_github_rx.ui.signin
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
@@ -26,8 +24,8 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var authTokenProvider: AuthTokenProvider*/
 
     private val disposables = AutoClearedDisposable(this)
-    private val viewDisposables = AutoClearedDisposable(this, false)
-    private val viewModelFactory by lazy { SignInViewModelFactory(provideAuthApi(), AuthTokenProvider()) }
+    private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
+    private val viewModelFactory by lazy { SignInViewModelFactory(provideAuthApi(), AuthTokenProvider(this)) }
     private lateinit var viewModel: SigninViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

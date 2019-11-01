@@ -12,11 +12,17 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.GithubApiProvider
+import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
+import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
@@ -29,27 +35,65 @@ import java.util.*
 
 // SearchAdapter 의 ItemClickListener 인터페이스 상속
 class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
-    
-    internal lateinit var api: GithubApi
-    internal lateinit var adapter: SearchAdapter
+
+    private val adapter by lazy { SearchAdapter().apply { listener = this@SearchActivity } }
     private lateinit var menuSearch: MenuItem
     private lateinit var searchView: SearchView
 
     private val disposable = AutoClearedDisposable(this)
-    // by lazy 구문을 통해 선언과 동시에 초기
-    internal val searchHistoryDao by lazy { provideSerachHistoryDao(this) }
+    private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
+
+    private val viewModelFactory by lazy {
+        SearchViewModelFactory(provideGithubApi(this), provideSerachHistoryDao(this))
+    }
+
+    private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        lifecycle.addObserver(disposable)
+        viewModel = ViewModelProviders.of(this, viewModelFactory) [SearchViewModel::class.java]
 
-        adapter = SearchAdapter()
-        adapter.listener = this
+        lifecycle.addObserver(disposable)
+        lifecycle.addObserver(viewDisposables)
+
         rvActivitySearchList.layoutManager = LinearLayoutManager(this)
         rvActivitySearchList.adapter = adapter
 
-        api = GithubApiProvider.provideGithubApi(this)
+        viewDisposables.add(viewModel.searchResult
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { items ->
+                    with(adapter) {
+                        if(items.isEmpty) {
+                            clearItems()
+                        } else {
+                            this.items = items.value.toMutableList()
+                        }
+                        notifyDataSetChanged()
+                    }
+                }
+        )
+
+        viewDisposables.add(viewModel.message
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { message ->
+                    if(message.isEmpty) {
+                        hideError()
+                    } else {
+                        showError(message.value)
+                    }
+                })
+
+        viewDisposables.add(viewModel.isLoading
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { isLoading ->
+                    if(isLoading) {
+                        showProgress()
+                    } else {
+                        hideProgress()
+                    }
+                }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,20 +101,10 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         menuSearch = menu.findItem(R.id.menu_activity_search_query)
 
         searchView = menuSearch.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            override fun onQueryTextSubmit(query: String): Boolean {
-                updateTitle(query)
-                hideSoftKeyboard()
-                collapseSearchView()
-                searchRepository(query)
-                return true
-            }
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                return false
-            }
-        })
+        viewDisposables.add()
+
+        viewDisposables.add()
 
         menuSearch.expandActionView()
         return true
@@ -95,41 +129,13 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     }
 
     private fun addDataToDatabase(repository: GithubRepo) {
-        disposable.add(Completable
-                .fromCallable { searchHistoryDao.insert(repository) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    Toast.makeText(this, "Uploading data to database...", Toast.LENGTH_SHORT).show()
-                }
-                .subscribe()
-        )
+        disposable.add(viewModel.addToSearchHistory(repository))
     }
 
     private fun searchRepository(query: String) {
-        disposable.add(api.searchRepository(query)
-                .flatMap {
-                    if(it.totalCount == 0) {
-                        Observable.error(IllegalStateException("No Search Result!!"))
-                    } else {
-                        Observable.just(it.items)
-                    }
-                }.observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe {
-                    clearResults()
-                    hideError()
-                    showProgress()
-                }
-                .doOnTerminate { hideProgress() }
-                .subscribe ({ items ->
-                    adapter.apply {
-                        this.items = items.toMutableList()
-                        notifyDataSetChanged()
-                    }
-                }) {
-                    showError(it.message)
-                }
-        )
+
+
+
     }
 
     private fun updateTitle(query: String) {

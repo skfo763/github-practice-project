@@ -45,6 +45,10 @@ internal class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHold
         }
     }
 
+    fun clearItems() {
+        items.clear()
+    }
+
     // 아이템 개수를 반환하는 메소드
     override fun getItemCount(): Int {
         return items.size

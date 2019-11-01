@@ -6,38 +6,49 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.model.GithubRepo
+import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.example.sample_github_rx.ui.search.SearchActivity
 import com.example.sample_github_rx.ui.search.SearchAdapter
-import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
     private val adapter by lazy { SearchAdapter().apply { listener = this@MainActivity } }
-    private val searchHistoryDao by lazy { provideSerachHistoryDao(this) }
     private val disposables = AutoClearedDisposable(this)
+    private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
+    private val viewModelFactory by lazy { MainViewModelFactory(provideSerachHistoryDao(this)) }
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = ViewModelProviders.of(this, viewModelFactory) [MainViewModel::class.java]
+
         lifecycle.addObserver(disposables)
-        lifecycle.addObserver(object: LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_START)
-            fun fetch() {
-                fetchSearchHistory()
-            }
+        lifecycle.addObserver(viewDisposable)
+        lifecycle.addObserver(AutoActivatedDisposable(this) {
+            viewModel.searchHistory
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { items ->
+                        with(adapter) {
+                            if(items.isEmpty) {
+                                clearItems()
+                            } else {
+                                this.items = items.value.toMutableList()
+                            }
+                            notifyDataSetChanged()
+                        }
+                    }
         })
 
         btnActivityMainSearch.setOnClickListener {
@@ -48,48 +59,32 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
         }
-    }
 
-    private fun fetchSearchHistory(): Disposable =
-            searchHistoryDao.searchHistory()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe( {
-                        with(adapter) {
-                            this.items = it.toMutableList()
-                            notifyDataSetChanged()
-                        }
-
-                        if(it.isEmpty()) {
-                            showMessage(getString(R.string.no_recent_repositories))
-                        } else {
-                            hideMessage()
-                        }
-                    }) {
-                        showMessage("network error has detacted.")
+        viewDisposable.add(viewModel.message
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { message ->
+                    if(message.isEmpty) {
+                        hideMessage()
+                    } else {
+                        showMessage(message.value)
                     }
+                })
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_activity_main, menu)
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(R.id.menu_activity_main_clearall == item.itemId) {
             clearAll()
-            return true
         }
-
         return super.onOptionsItemSelected(item)
     }
 
     private fun clearAll() {
-        disposables.add(Completable
-                .fromCallable {
-                    searchHistoryDao.deleteAll()
-                }.subscribeOn(Schedulers.io())
-                .subscribe()
-        )
+        disposables.add(viewModel.clearSearchHistory())
     }
 
     override fun onItemClick(repository: GithubRepo) {
