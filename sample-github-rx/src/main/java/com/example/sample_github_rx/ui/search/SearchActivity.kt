@@ -19,6 +19,7 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
+import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
@@ -92,8 +93,20 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
         searchView = menuSearch.actionView as SearchView
 
-        viewDisposables.add(searchView.quertTextChangeEvent
-                .)
+        viewDisposables.add(searchView.queryTextChangeEvents()
+                .filter {it.isSubmitted }
+                .map { it.queryText }
+                .filter { it.isNotEmpty() }
+                .map { it.toString() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    updateTitle(it)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        hideSoftKeyboard()
+                    }
+                    collapseSearchView()
+                    searchRepository(it)
+                })
 
         menuSearch.expandActionView()
         return true
