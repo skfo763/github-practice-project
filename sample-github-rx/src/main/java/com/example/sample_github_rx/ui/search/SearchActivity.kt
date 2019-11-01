@@ -92,6 +92,9 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
         searchView = menuSearch.actionView as SearchView
 
+        viewDisposables.add(searchView.quertTextChangeEvent
+                .)
+
         menuSearch.expandActionView()
         return true
     }
