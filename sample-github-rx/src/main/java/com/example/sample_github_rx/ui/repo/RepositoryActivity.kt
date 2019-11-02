@@ -3,9 +3,9 @@ package com.example.sample_github_rx.ui.repo
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApi
-import com.example.sample_github_rx.api.GithubApiProvider
+import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.ui.GlideApp
@@ -17,19 +17,31 @@ import java.util.*
 
 class RepositoryActivity : AppCompatActivity() {
 
-    internal lateinit var api: GithubApi
     private var dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
     private var dateFormatToShow = SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     private val disposable = AutoClearedDisposable(this)
+    private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
+    private val viewModelFactory by lazy { RepositoryViewModelFactory(provideGithubApi(this)) }
+    private lateinit var viewModel: RepositoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repository)
+        viewModel = ViewModelProviders.of(this, viewModelFactory) [RepositoryViewModel::class.java]
+
         lifecycle.addObserver(disposable)
-        api = GithubApiProvider.provideGithubApi(this)
+        lifecycle.addObserver(viewDisposable)
+
+        viewDisposable.add(viewModel.repository
+                .filter{ !it.isEmpty }
+                .map { it.value }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { repository ->
+                    setUiAtOnSubscribe(repository)
+                })
 
         val login = intent.getStringExtra(KEY_USER_LOGIN)
                 ?: throw IllegalArgumentException("No login info exists in extras")
@@ -37,22 +49,25 @@ class RepositoryActivity : AppCompatActivity() {
         val repo = intent.getStringExtra(KEY_REPO_NAME)
                 ?: throw IllegalArgumentException("No repo info exists in extras")
 
-        showRepositoryInfo(login, repo)
-    }
-
-    private fun showRepositoryInfo(login: String, repoName: String) {
-        disposable.add(api.getRepository(login, repoName)
+        viewDisposable.add(viewModel.message
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { showProgress() }
-                .doOnTerminate { hideProgress(true) }
-                .doOnError { hideProgress(false) }
-                .doOnComplete { hideProgress(true) }
-                .subscribe({ repo ->
-                    setUiAtOnSubscribe(repo)
-                }) {
-                    showError(it.message)
-                }
-        )
+                .subscribe { message -> showError(message) })
+
+        viewDisposable.add(viewModel.isContentVisible
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { visible -> setContentVisibility(visible) })
+
+        viewDisposable.add(viewModel.isLoading
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { isLoading ->
+                    if(isLoading) {
+                        showProgress()
+                    } else {
+                        hideProgress()
+                    }
+                })
+
+        disposable.add(viewModel.requestRepositoryInfo(login, repo))
     }
 
     private fun setUiAtOnSubscribe(repo: GithubRepo) {
@@ -85,8 +100,11 @@ class RepositoryActivity : AppCompatActivity() {
         pbActivityRepository.visibility = View.VISIBLE
     }
 
-    private fun hideProgress(isSucceed: Boolean) {
-        llActivityRepositoryContent.visibility = if (isSucceed) View.VISIBLE else View.GONE
+    private fun setContentVisibility(show: Boolean) {
+        llActivityRepositoryContent.visibility = if(show) View.VISIBLE else View.GONE
+    }
+
+    private fun hideProgress() {
         pbActivityRepository.visibility = View.GONE
     }
 
