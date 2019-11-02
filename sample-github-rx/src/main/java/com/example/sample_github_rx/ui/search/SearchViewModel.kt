@@ -7,11 +7,10 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.emptyOptional
 import com.example.sample_github_rx.optionalOf
 import com.example.sample_github_rx.room.SearchHistoryDao
-import io.reactivex.Completable
+import com.example.sample_github_rx.runOnIoScheduler
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 
 class SearchViewModel (val api: GithubApi, val searchHistoryDao: SearchHistoryDao): ViewModel() {
@@ -48,9 +47,7 @@ class SearchViewModel (val api: GithubApi, val searchHistoryDao: SearchHistoryDa
     }
 
     fun addToSearchHistory(repo: GithubRepo): Disposable {
-        return Completable.fromCallable { searchHistoryDao.insert(repo) }
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+        return runOnIoScheduler { searchHistoryDao.insert(repo) }
     }
 
 }

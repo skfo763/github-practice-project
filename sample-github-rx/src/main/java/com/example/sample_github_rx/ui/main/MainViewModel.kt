@@ -6,10 +6,9 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.emptyOptional
 import com.example.sample_github_rx.optionalOf
 import com.example.sample_github_rx.room.SearchHistoryDao
-import io.reactivex.Completable
+import com.example.sample_github_rx.runOnIoScheduler
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 
 class MainViewModel(val searchHistoryDao: SearchHistoryDao): ViewModel() {
@@ -28,8 +27,6 @@ class MainViewModel(val searchHistoryDao: SearchHistoryDao): ViewModel() {
                 }
 
     fun clearSearchHistory(): Disposable {
-        return Completable.fromCallable { searchHistoryDao.deleteAll() }
-                .subscribeOn(Schedulers.io())
-                .subscribe()
+        return runOnIoScheduler { searchHistoryDao.deleteAll() }
     }
 }

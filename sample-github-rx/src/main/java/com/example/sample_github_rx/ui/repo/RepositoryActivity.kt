@@ -8,6 +8,7 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
+import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.ui.GlideApp
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_repository.*
@@ -32,16 +33,16 @@ class RepositoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_repository)
         viewModel = ViewModelProviders.of(this, viewModelFactory) [RepositoryViewModel::class.java]
 
-        lifecycle.addObserver(disposable)
-        lifecycle.addObserver(viewDisposable)
+        lifecycle += disposable
+        lifecycle += viewDisposable
 
-        viewDisposable.add(viewModel.repository
+        viewDisposable += viewModel.repository
                 .filter{ !it.isEmpty }
                 .map { it.value }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { repository ->
                     setUiAtOnSubscribe(repository)
-                })
+                }
 
         val login = intent.getStringExtra(KEY_USER_LOGIN)
                 ?: throw IllegalArgumentException("No login info exists in extras")
@@ -49,15 +50,15 @@ class RepositoryActivity : AppCompatActivity() {
         val repo = intent.getStringExtra(KEY_REPO_NAME)
                 ?: throw IllegalArgumentException("No repo info exists in extras")
 
-        viewDisposable.add(viewModel.message
+        viewDisposable += viewModel.message
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { message -> showError(message) })
+                .subscribe { message -> showError(message) }
 
-        viewDisposable.add(viewModel.isContentVisible
+        viewDisposable += viewModel.isContentVisible
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { visible -> setContentVisibility(visible) })
+                .subscribe { visible -> setContentVisibility(visible) }
 
-        viewDisposable.add(viewModel.isLoading
+        viewDisposable += viewModel.isLoading
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { isLoading ->
                     if(isLoading) {
@@ -65,9 +66,9 @@ class RepositoryActivity : AppCompatActivity() {
                     } else {
                         hideProgress()
                     }
-                })
+                }
 
-        disposable.add(viewModel.requestRepositoryInfo(login, repo))
+        disposable += viewModel.requestRepositoryInfo(login, repo)
     }
 
     private fun setUiAtOnSubscribe(repo: GithubRepo) {

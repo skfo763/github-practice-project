@@ -14,6 +14,7 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.GithubApiProvider.provideAuthApi
 import com.example.sample_github_rx.data.AuthTokenProvider
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
+import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.ui.main.MainActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_sign_in.*
@@ -32,19 +33,19 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
         viewModel = ViewModelProviders.of(this, viewModelFactory) [SigninViewModel::class.java]
-        lifecycle.addObserver(disposables)
-        lifecycle.addObserver(viewDisposables)
+        lifecycle += disposables
+        lifecycle += viewDisposables
 
-        viewDisposables.add(viewModel.accessToken
+        viewDisposables += viewModel.accessToken
                 .filter { !it.isEmpty }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { launchMainActivity() })
+                .subscribe { launchMainActivity() }
 
-        viewDisposables.add(viewModel.message
+        viewDisposables += viewModel.message
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { showError(it)})
+                .subscribe { showError(it)}
 
-        viewDisposables.add(viewModel.isLoading
+        viewDisposables += viewModel.isLoading
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { isLoading ->
                     if(isLoading) {
@@ -52,9 +53,9 @@ class SignInActivity : AppCompatActivity() {
                     } else {
                         hideProgress()
                     }
-                })
+                }
 
-        disposables.add(viewModel.loadAccessToken())
+        disposables += viewModel.loadAccessToken()
 
         btnActivitySignInStart.setOnClickListener {
             val authUri = Uri.Builder().scheme("https").authority("github.com")

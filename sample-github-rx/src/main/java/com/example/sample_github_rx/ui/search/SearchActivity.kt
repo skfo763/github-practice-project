@@ -17,6 +17,7 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
+import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
@@ -45,13 +46,13 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         setContentView(R.layout.activity_search)
         viewModel = ViewModelProviders.of(this, viewModelFactory) [SearchViewModel::class.java]
 
-        lifecycle.addObserver(disposable)
-        lifecycle.addObserver(viewDisposables)
+        lifecycle += disposable
+        lifecycle += viewDisposables
 
         rvActivitySearchList.layoutManager = LinearLayoutManager(this)
         rvActivitySearchList.adapter = adapter
 
-        viewDisposables.add(viewModel.searchResult
+        viewDisposables += viewModel.searchResult
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { items ->
                     with(adapter) {
@@ -63,9 +64,8 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                         notifyDataSetChanged()
                     }
                 }
-        )
 
-        viewDisposables.add(viewModel.message
+        viewDisposables += viewModel.message
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { message ->
                     if(message.isEmpty) {
@@ -73,9 +73,9 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                     } else {
                         showError(message.value)
                     }
-                })
+                }
 
-        viewDisposables.add(viewModel.isLoading
+        viewDisposables += viewModel.isLoading
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { isLoading ->
                     if(isLoading) {
@@ -84,7 +84,6 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                         hideProgress()
                     }
                 }
-        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -93,7 +92,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
 
         searchView = menuSearch.actionView as SearchView
 
-        viewDisposables.add(searchView.queryTextChangeEvents()
+        viewDisposables += searchView.queryTextChangeEvents()
                 .filter {it.isSubmitted }
                 .map { it.queryText }
                 .filter { it.isNotEmpty() }
@@ -106,9 +105,9 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                     }
                     collapseSearchView()
                     searchRepository(it)
-                })
+                }
 
-        viewDisposables.add(viewModel.lastSearchKeyword
+        viewDisposables += viewModel.lastSearchKeyword
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     if(it.isEmpty) {
@@ -116,7 +115,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                     } else {
                         updateTitle(it.value)
                     }
-                })
+                }
         return true
     }
 
@@ -139,11 +138,11 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     }
 
     private fun addDataToDatabase(repository: GithubRepo) {
-        disposable.add(viewModel.addToSearchHistory(repository))
+        disposable += viewModel.addToSearchHistory(repository)
     }
 
     private fun searchRepository(query: String) {
-        disposable.add(viewModel.searchRespository(query))
+        disposable += viewModel.searchRespository(query)
     }
 
     private fun updateTitle(query: String) {

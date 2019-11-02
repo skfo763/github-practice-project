@@ -12,6 +12,7 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
+import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.room.provideSerachHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.example.sample_github_rx.ui.search.SearchActivity
@@ -33,9 +34,10 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this, viewModelFactory) [MainViewModel::class.java]
 
-        lifecycle.addObserver(disposables)
-        lifecycle.addObserver(viewDisposable)
-        lifecycle.addObserver(AutoActivatedDisposable(this) {
+        lifecycle += disposables
+        lifecycle += viewDisposable
+
+        lifecycle += AutoActivatedDisposable(this) {
             viewModel.searchHistory
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                             notifyDataSetChanged()
                         }
                     }
-        })
+        }
 
         btnActivityMainSearch.setOnClickListener {
             startActivity(Intent(this@MainActivity, SearchActivity::class.java))
@@ -60,7 +62,7 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
             adapter = this@MainActivity.adapter
         }
 
-        viewDisposable.add(viewModel.message
+        viewDisposable += viewModel.message
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { message ->
                     if(message.isEmpty) {
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
                     } else {
                         showMessage(message.value)
                     }
-                })
+                }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
