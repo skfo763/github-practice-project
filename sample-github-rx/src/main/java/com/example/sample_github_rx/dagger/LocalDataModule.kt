@@ -1,4 +1,4 @@
-package com.example.sample_github_rx.dagger.common
+package com.example.sample_github_rx.dagger
 
 import android.content.Context
 import androidx.room.Room

@@ -1,4 +1,4 @@
-package com.example.sample_github_rx.dagger.common
+package com.example.sample_github_rx.dagger
 
 import com.example.sample_github_rx.data.AuthTokenProvider
 import dagger.Module
@@ -37,7 +37,7 @@ class OkHttpModule {
 
     @Provides
     @Singleton
-    fun provideLoggingIntercepterInDagger(): HttpLoggingInterceptor {
+    fun provideLoggingInterceptorInDagger(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -54,7 +54,6 @@ class OkHttpModule {
 class AuthInterceptorInDagger(private val token: String) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        // 요청 헤더에 액세스 토큰 정보 추가
         chain.request().newBuilder()
                 .addHeader("Authorization", "token $token")
                 .build().apply { return chain.proceed(this) }

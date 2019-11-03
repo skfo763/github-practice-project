@@ -1,7 +1,8 @@
-package com.example.sample_github_rx.dagger.common
+package com.example.sample_github_rx.dagger
 
 import com.example.sample_github_rx.api.AuthApi
 import com.example.sample_github_rx.api.GithubApi
+import com.example.sample_github_rx.data.UriData
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -36,7 +37,7 @@ class ApiModule {
             converter: Converter.Factory
     ): AuthApi {
         return Retrofit.Builder()
-                .baseUrl("https://github.com/")
+                .baseUrl(UriData.authUri)
                 .client(client)
                 .addCallAdapterFactory(callAdapter)
                 .addConverterFactory(converter)
@@ -52,7 +53,7 @@ class ApiModule {
             converter: Converter.Factory
     ): GithubApi {
         return Retrofit.Builder()
-                .baseUrl("https://github.com/")
+                .baseUrl(UriData.githubUri)
                 .client(client)
                 .addCallAdapterFactory(callAdapter)
                 .addConverterFactory(converter)

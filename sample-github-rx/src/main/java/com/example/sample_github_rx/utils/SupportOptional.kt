@@ -1,4 +1,4 @@
-package com.example.sample_github_rx
+package com.example.sample_github_rx.utils
 
 sealed class SupportOptional<out T: Any>(private val __value: T?) {
 

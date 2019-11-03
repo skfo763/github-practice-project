@@ -1,4 +1,4 @@
-package com.example.sample_github_rx
+package com.example.sample_github_rx.utils
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
