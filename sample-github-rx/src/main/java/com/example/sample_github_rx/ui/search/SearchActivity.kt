@@ -9,24 +9,28 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
+import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.plusAssign
-import com.example.sample_github_rx.room.provideSerachHistoryDao
+import com.example.sample_github_rx.room.SearchHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_search.*
 import java.util.*
+import javax.inject.Inject
 
 // SearchAdapter 의 ItemClickListener 인터페이스 상속
-class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
+class SearchActivity : DaggerAppCompatActivity(), SearchAdapter.ItemClickListener {
+
+    @Inject private lateinit var githubApi: GithubApi
+    @Inject private lateinit var searchHistoryDao: SearchHistoryDao
 
     private val adapter by lazy { SearchAdapter().apply { listener = this@SearchActivity } }
     private lateinit var menuSearch: MenuItem
@@ -36,7 +40,7 @@ class SearchActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
     private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
 
     private val viewModelFactory by lazy {
-        SearchViewModelFactory(provideGithubApi(this), provideSerachHistoryDao(this))
+        SearchViewModelFactory(githubApi, searchHistoryDao)
     }
 
     private lateinit var viewModel: SearchViewModel

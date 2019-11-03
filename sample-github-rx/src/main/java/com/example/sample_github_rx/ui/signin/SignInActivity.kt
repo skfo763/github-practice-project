@@ -6,27 +6,32 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApiProvider.provideAuthApi
+import com.example.sample_github_rx.api.AuthApi
 import com.example.sample_github_rx.data.AuthTokenProvider
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.ui.main.MainActivity
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import javax.inject.Inject
 
-class SignInActivity : AppCompatActivity() {
+class SignInActivity : DaggerAppCompatActivity() {
 
-    /*internal lateinit var api: AuthApi
-    private lateinit var authTokenProvider: AuthTokenProvider*/
+    @Inject private lateinit var authApi: AuthApi
+    @Inject private lateinit var authTokenProvider: AuthTokenProvider
 
     private val disposables = AutoClearedDisposable(this)
     private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-    private val viewModelFactory by lazy { SignInViewModelFactory(provideAuthApi(), AuthTokenProvider(this)) }
+
+    private val viewModelFactory by lazy {
+        SignInViewModelFactory(authApi, authTokenProvider)
+    }
+
     private lateinit var viewModel: SigninViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

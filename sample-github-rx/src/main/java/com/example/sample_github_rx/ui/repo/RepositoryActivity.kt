@@ -2,21 +2,24 @@ package com.example.sample_github_rx.ui.repo
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApiProvider.provideGithubApi
+import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.plusAssign
 import com.example.sample_github_rx.ui.GlideApp
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_repository.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class RepositoryActivity : AppCompatActivity() {
+class RepositoryActivity : DaggerAppCompatActivity() {
+
+    @Inject private lateinit var githubApi: GithubApi
 
     private var dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
@@ -25,7 +28,7 @@ class RepositoryActivity : AppCompatActivity() {
 
     private val disposable = AutoClearedDisposable(this)
     private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-    private val viewModelFactory by lazy { RepositoryViewModelFactory(provideGithubApi(this)) }
+    private val viewModelFactory by lazy { RepositoryViewModelFactory(githubApi) }
     private lateinit var viewModel: RepositoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

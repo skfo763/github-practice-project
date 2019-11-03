@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
@@ -13,20 +12,24 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
 import com.example.sample_github_rx.plusAssign
-import com.example.sample_github_rx.room.provideSerachHistoryDao
+import com.example.sample_github_rx.room.SearchHistoryDao
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.example.sample_github_rx.ui.search.SearchActivity
 import com.example.sample_github_rx.ui.search.SearchAdapter
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
+class MainActivity : DaggerAppCompatActivity(), SearchAdapter.ItemClickListener {
+
+    @Inject private lateinit var searchHistoryDao: SearchHistoryDao
 
     private val adapter by lazy { SearchAdapter().apply { listener = this@MainActivity } }
     private val disposables = AutoClearedDisposable(this)
     private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-    private val viewModelFactory by lazy { MainViewModelFactory(provideSerachHistoryDao(this)) }
+    private val viewModelFactory by lazy { MainViewModelFactory(searchHistoryDao) }
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

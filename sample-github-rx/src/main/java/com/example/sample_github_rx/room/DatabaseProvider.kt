@@ -5,7 +5,7 @@ import androidx.room.Room
 
 private var instance : SimpleGithubDatabase? = null
 
-fun provideSerachHistoryDao(context: Context): SearchHistoryDao
+fun provideSearchHistoryDao(context: Context): SearchHistoryDao
     = provideDatabase(context).searchHistoryDao()
 
 private fun provideDatabase(context: Context): SimpleGithubDatabase {
