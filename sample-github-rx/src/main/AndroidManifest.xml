@@ -2,9 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.sample_github_rx"
-    tools:ignore="UnusedAttribute">
+    tools:ignore="MissingLeanbackLauncher,UnusedAttribute">
 
     <!-- 외부 서버와 통신 필요, 인터넷 기능 사용을 위한 권한 추가 -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

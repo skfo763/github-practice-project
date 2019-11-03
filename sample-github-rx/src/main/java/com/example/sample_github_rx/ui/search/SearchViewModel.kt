@@ -1,13 +1,13 @@
 package com.example.sample_github_rx.ui.search
 
 import androidx.lifecycle.ViewModel
-import com.example.sample_github_rx.SupportOptional
+import com.example.sample_github_rx.utils.SupportOptional
 import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
-import com.example.sample_github_rx.emptyOptional
-import com.example.sample_github_rx.optionalOf
+import com.example.sample_github_rx.utils.emptyOptional
+import com.example.sample_github_rx.utils.optionalOf
 import com.example.sample_github_rx.room.SearchHistoryDao
-import com.example.sample_github_rx.runOnIoScheduler
+import com.example.sample_github_rx.utils.runOnIoScheduler
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -24,7 +24,7 @@ class SearchViewModel (val api: GithubApi, val searchHistoryDao: SearchHistoryDa
     val message: BehaviorSubject<SupportOptional<String>> = BehaviorSubject.create()
     val isLoading: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
 
-    fun searchRespository(query: String): Disposable {
+    fun searchRepository(query: String): Disposable {
         return api.searchRepository(query)
                 .doOnNext { lastSearchKeyword.onNext(optionalOf(query)) }
                 .flatMap {
@@ -42,7 +42,8 @@ class SearchViewModel (val api: GithubApi, val searchHistoryDao: SearchHistoryDa
                 .subscribe( {items ->
                     searchResult.onNext(optionalOf(items))
                 }) {
-                    message.onNext(optionalOf(it.message ?: "Unexpected error"))
+                    message.onNext(optionalOf(it.message
+                            ?: "Unexpected error"))
                 }
     }
 

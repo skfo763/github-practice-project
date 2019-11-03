@@ -1,10 +1,10 @@
 package com.example.sample_github_rx.ui.repo
 
 import androidx.lifecycle.ViewModel
-import com.example.sample_github_rx.SupportOptional
+import com.example.sample_github_rx.utils.SupportOptional
 import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
-import com.example.sample_github_rx.optionalOf
+import com.example.sample_github_rx.utils.optionalOf
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

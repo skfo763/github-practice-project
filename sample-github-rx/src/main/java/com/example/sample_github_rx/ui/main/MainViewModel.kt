@@ -1,12 +1,12 @@
 package com.example.sample_github_rx.ui.main
 
 import androidx.lifecycle.ViewModel
-import com.example.sample_github_rx.SupportOptional
+import com.example.sample_github_rx.utils.SupportOptional
 import com.example.sample_github_rx.api.model.GithubRepo
-import com.example.sample_github_rx.emptyOptional
-import com.example.sample_github_rx.optionalOf
+import com.example.sample_github_rx.utils.emptyOptional
+import com.example.sample_github_rx.utils.optionalOf
 import com.example.sample_github_rx.room.SearchHistoryDao
-import com.example.sample_github_rx.runOnIoScheduler
+import com.example.sample_github_rx.utils.runOnIoScheduler
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject

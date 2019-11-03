@@ -1,5 +1,8 @@
 package com.example.sample_github_rx.dagger
 
+import com.example.sample_github_rx.dagger.ui.MainModule
+import com.example.sample_github_rx.dagger.ui.RepositoryModule
+import com.example.sample_github_rx.dagger.ui.SearchModule
 import com.example.sample_github_rx.dagger.ui.SignInModule
 import com.example.sample_github_rx.ui.main.MainActivity
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
@@ -14,13 +17,13 @@ abstract class ActivityBinder {
     @ContributesAndroidInjector(modules = [SignInModule::class])
     abstract fun bindSignInActivity(): SignInActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [MainModule::class])
     abstract fun bindMainActivity(): MainActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [SearchModule::class])
     abstract fun bindSearchActivity(): SearchActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [RepositoryModule::class])
     abstract fun bindRepositoryActivity(): RepositoryActivity
 
 }

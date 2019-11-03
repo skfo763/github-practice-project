@@ -13,11 +13,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
-import com.example.sample_github_rx.plusAssign
-import com.example.sample_github_rx.room.SearchHistoryDao
+import com.example.sample_github_rx.utils.plusAssign
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import dagger.android.support.DaggerAppCompatActivity
@@ -29,20 +27,13 @@ import javax.inject.Inject
 // SearchAdapter 의 ItemClickListener 인터페이스 상속
 class SearchActivity : DaggerAppCompatActivity(), SearchAdapter.ItemClickListener {
 
-    @Inject private lateinit var githubApi: GithubApi
-    @Inject private lateinit var searchHistoryDao: SearchHistoryDao
+    @Inject lateinit var adapter: SearchAdapter
+    @Inject lateinit var viewModelFactory: SearchViewModelFactory
 
-    private val adapter by lazy { SearchAdapter().apply { listener = this@SearchActivity } }
     private lateinit var menuSearch: MenuItem
     private lateinit var searchView: SearchView
-
     private val disposable = AutoClearedDisposable(this)
     private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-
-    private val viewModelFactory by lazy {
-        SearchViewModelFactory(githubApi, searchHistoryDao)
-    }
-
     private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,7 +137,7 @@ class SearchActivity : DaggerAppCompatActivity(), SearchAdapter.ItemClickListene
     }
 
     private fun searchRepository(query: String) {
-        disposable += viewModel.searchRespository(query)
+        disposable += viewModel.searchRepository(query)
     }
 
     private fun updateTitle(query: String) {

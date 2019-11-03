@@ -11,8 +11,7 @@ import com.example.sample_github_rx.R
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoActivatedDisposable
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
-import com.example.sample_github_rx.plusAssign
-import com.example.sample_github_rx.room.SearchHistoryDao
+import com.example.sample_github_rx.utils.plusAssign
 import com.example.sample_github_rx.ui.repo.RepositoryActivity
 import com.example.sample_github_rx.ui.search.SearchActivity
 import com.example.sample_github_rx.ui.search.SearchAdapter
@@ -24,12 +23,11 @@ import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), SearchAdapter.ItemClickListener {
 
-    @Inject private lateinit var searchHistoryDao: SearchHistoryDao
+    @Inject lateinit var adapter: SearchAdapter
+    @Inject lateinit var viewModelFactory: MainViewModelFactory
 
-    private val adapter by lazy { SearchAdapter().apply { listener = this@MainActivity } }
     private val disposables = AutoClearedDisposable(this)
     private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-    private val viewModelFactory by lazy { MainViewModelFactory(searchHistoryDao) }
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

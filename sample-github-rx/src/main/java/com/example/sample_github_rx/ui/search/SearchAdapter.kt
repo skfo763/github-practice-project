@@ -13,7 +13,7 @@ import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.ui.GlideApp
 import java.util.*
 
-internal class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
+class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     var items: MutableList<GithubRepo> = ArrayList()
     var listener: ItemClickListener? = null
     private val placeholder = ColorDrawable(Color.GRAY)

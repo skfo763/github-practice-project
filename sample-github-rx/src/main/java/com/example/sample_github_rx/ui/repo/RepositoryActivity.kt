@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.GithubApi
 import com.example.sample_github_rx.api.model.GithubRepo
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
-import com.example.sample_github_rx.plusAssign
+import com.example.sample_github_rx.utils.plusAssign
 import com.example.sample_github_rx.ui.GlideApp
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 class RepositoryActivity : DaggerAppCompatActivity() {
 
-    @Inject private lateinit var githubApi: GithubApi
+    @Inject lateinit var viewModelFactory: RepositoryViewModelFactory
 
     private var dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
@@ -28,7 +27,6 @@ class RepositoryActivity : DaggerAppCompatActivity() {
 
     private val disposable = AutoClearedDisposable(this)
     private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-    private val viewModelFactory by lazy { RepositoryViewModelFactory(githubApi) }
     private lateinit var viewModel: RepositoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,10 +1,10 @@
 package com.example.sample_github_rx.ui.signin
 
 import androidx.lifecycle.ViewModel
-import com.example.sample_github_rx.SupportOptional
+import com.example.sample_github_rx.utils.SupportOptional
 import com.example.sample_github_rx.api.AuthApi
 import com.example.sample_github_rx.data.AuthTokenProvider
-import com.example.sample_github_rx.optionalOf
+import com.example.sample_github_rx.utils.optionalOf
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer

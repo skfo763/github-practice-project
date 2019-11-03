@@ -10,10 +10,8 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
-import com.example.sample_github_rx.api.AuthApi
-import com.example.sample_github_rx.data.AuthTokenProvider
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
-import com.example.sample_github_rx.plusAssign
+import com.example.sample_github_rx.utils.plusAssign
 import com.example.sample_github_rx.ui.main.MainActivity
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,16 +20,10 @@ import javax.inject.Inject
 
 class SignInActivity : DaggerAppCompatActivity() {
 
-    @Inject private lateinit var authApi: AuthApi
-    @Inject private lateinit var authTokenProvider: AuthTokenProvider
+    @Inject lateinit var viewModelFactory: SignInViewModelFactory
 
     private val disposables = AutoClearedDisposable(this)
     private val viewDisposables = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
-
-    private val viewModelFactory by lazy {
-        SignInViewModelFactory(authApi, authTokenProvider)
-    }
-
     private lateinit var viewModel: SigninViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
