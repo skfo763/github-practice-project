@@ -3,7 +3,6 @@ package com.example.sample_github_rx.ui.signin
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
@@ -11,8 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.sample_github_rx.BuildConfig
 import com.example.sample_github_rx.R
 import com.example.sample_github_rx.lifecycle.AutoClearedDisposable
-import com.example.sample_github_rx.utils.plusAssign
 import com.example.sample_github_rx.ui.main.MainActivity
+import com.example.sample_github_rx.utils.plusAssign
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_sign_in.*
@@ -61,7 +60,6 @@ class SignInActivity : DaggerAppCompatActivity() {
                     .appendPath("authorize")
                     .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
                     .build()
-            Log.i("TAG", "Uri: $authUri")
             CustomTabsIntent.Builder().build().apply { launchUrl(this@SignInActivity, authUri) }
         }
     }
@@ -96,7 +94,7 @@ class SignInActivity : DaggerAppCompatActivity() {
     private fun launchMainActivity() {
         startActivity(Intent(
                 this@SignInActivity, MainActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // 액티비티 스택에서 제거
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) // 새로운 액티비티를 추가
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 }

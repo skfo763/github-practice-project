@@ -8,14 +8,14 @@ import io.reactivex.disposables.Disposable
 
 class AutoActivatedDisposable (
     private val lifecycleAdapter: LifecycleOwner,
-    private val func : () -> Disposable ): LifecycleObserver {
+    private val func : () -> Disposable
+): LifecycleObserver {
 
     private var disposable: Disposable? = null
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun activate() {
         disposable = func.invoke()
-
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

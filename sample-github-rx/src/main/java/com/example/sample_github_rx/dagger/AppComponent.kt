@@ -13,6 +13,7 @@ import javax.inject.Singleton
             OkHttpModule::class, AndroidSupportInjectionModule::class, ActivityBinder::class])
 interface AppComponent: AndroidInjector<SampleGithubRxApp> {
 
+    // AppComponent를 생성할 때 사용할 빌더 클래스 정의
     @Component.Builder
     interface Builder {
 
